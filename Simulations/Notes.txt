@@ -1,0 +1,50 @@
+﻿NOTES:
+
+	- Parameter names CANNOT start with numbers
+
+TODO:
+
+
+	Current Work
+	------------
+
+	* Up/Down probability for BinomialTreeSimulation
+	* Enhance BinomialTreeSimulationResults
+	* BinomialTreeSimulationParameter for use in standard Simulation (takes summary statistic)
+	* Use BinomialTree to calculate FV of a derivative?
+	* Constant movement parameter --> e.g. from 1 to 2 over time period (allow different interpolation types/random path between?)
+
+	* Brownian Motion / Black-Scholes model
+
+	
+
+	Planned / Keep in mind
+	----------------------
+
+	- Figure out how to handle different number types (make everything FloatingPoint?)
+
+	- Sensivity builder
+		> Use another parameter to generate a precomputed parameter that can be used in a sensitivity analysis
+
+	- Formula parameters
+		> essentially just simulation parameters that are prebuilt from templates
+
+	- Optimization simulation
+		> use equation to min/max a variable or outcome
+
+	- Validate expression before running simulation?
+		> Split out non-variable characters and verify remaining variables have matching paramerters
+
+	- Allow access to individual parameters inside results sets as their own result set
+		> can verify that they were generated correctly
+
+	- Make it easier to regenerate individual parameters in results sets
+		> currently have to replace parameter with itself
+
+	- Use confidence interval as a result parameter from a simulation?
+
+	- Find a way to remove dynamic cast?
+		> maybe by checking the distribution interface to see what type of values it will generate?
+
+	- Handle rare case in binomial tree where a node could overlap a node in the same generation that wasn't the last generated node?
+		> not sure how this would actually happen... but maybe using some janky dynamic volatility parameter
