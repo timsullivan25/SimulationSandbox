@@ -135,6 +135,14 @@ The above examples serves as a simplified loot table for killing an NPC in a vid
 
 Although qualitative simulations can stand on their own, they can be used as parameters for standard simulations when wrapped inside a qualitative interpretation parameter. The jist of this is that we can provide an "interpretation dictionary" to decide how to transform a string back into a number used in the evaluation of our expression. A practical example might be creating a simulation where we will make a "go/no go" decision and then multiple the remainder of the expression by 1 for "go" or 0 for no "go" to compute only the outcomes where we chose to proceed.
 
+#### Binomial Tree Simulation
+
+This is a very specific type of simulation designed to produce a node tree encompassing n periods based on the volatility parameter and up probability provided. By itself, this simulation is not particularly useful, but it served as the foundation for me to create the option pricing version of the simulation.
+
+#### Binomial Option Pricing Simulation
+
+As this is a specialized finance function, I will not spend too much time on the details. Essentially, this type of simulation is used to compute the price of a call or put option using the [binomial options pricing model](https://en.wikipedia.org/wiki/Binomial_options_pricing_model). I have provided a class for specifying the details of the option to be valued. I am reasonably confident in the basic implementation, but do not advise using this for the purpose of making actual investments. If that is your goal, I would advise hiring me full-time and I will be happy to provide a more robust version of this pricing model, among many other valuable contributions.
+
 ## Parameter Types
 
 #### Quantitative
