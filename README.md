@@ -29,7 +29,7 @@ This serves as the building block for most other types of simulations. To create
         new DistributionParameter("twentysided", new DiscreteUniform(1, 20))
     };
 
-  Simulation simulation = new Simulation(expression, parameters);
+    Simulation simulation = new Simulation(expression, parameters);
 
 The above is a simple example of how expressions and parameters interact to create a simulation. The expression tells the simulation that we wish to evaluate the result of one variable named "twentysided". For every variable in the expression, we must define how the value of that variable will be determined. In this case, we have defined the "twentysided" variable to be a discrete uniform distribution from 1 to 20 -- essentially, we are going to roll a twenty-sided die and return the value.
 
