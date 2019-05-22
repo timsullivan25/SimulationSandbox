@@ -92,7 +92,48 @@ The simulation will be performed as follows: PrecomputedParameters will be divid
 
 This is very similar to the sensitivity simulation described above, but with one caveat. In the prior example, sets of PrecomputedParameters were generated based on the order in which the values were provided. For the exhaustive variant of the simulation, all possible combinations of the PrecomputedParameters will be tested. This means that the above example would return 9 result sets instead of three. Obviously, this can lead to a drastic increase in computation time, so this has been broken into a seperate class so the user can choose when to use this version. Additionally, the exhaustive sensitivity simulation provides a multi-threaded version of the Simulate function to speed up computation when resources are available. Neither version of the sensivity simulation can be used as a simulation parameter, although it seems like it would be feasible to implement if there was a need for this in the future.
 
+#### Qualitative Simulation
 
+Qualitative simulations are designed to provide a non-numeric result to a quantitative simulation. A better way to phrase this might be to say that this type of simulation is meant to represent a decision or classification made based on the observation of the underlying data. To illustrate this, I will use what I hope is a more interesting example than some of the ones I have previously provided.
+
+    QualitativeParameter param = new QualitativeParameter("arrowkey",
+                                                          new QualitativeOutcome("left", 0.25),
+                                                          new QualitativeOutcome("right", 0.25),
+                                                          new QualitativeOutcome("up", 0.25),
+                                                          new QualitativeOutcome("down", 0.25));
+                                                          
+    QualitativeSimulation simulation = new QualitativeSimulation(param);
+    QualitativeSimulationResults results = simulation.Simulate(_numberOfSimulations);
+
+Imagine you are creating a computer game where the AI opponent will randomly move in one direction each turn. To represent this movement, I have defined a set of outcomes called "arrowkey" where the AI is equally likely to move in any direction. When the Simulate function is called, a result set will be returned that contains the next n moves that the AI will make. The outcomes can be defined as anything you would like, so long as the cumulative probability of all outcomes adds up to 100%.
+
+While the above example serves as a decision, qualitative simulations can also produce classifications. For example:
+
+    QualitativeConditionalParameter param = new QualitativeConditionalParameter(
+                                            "upordown",
+                                            new DistributionParameter("normal", new Normal(1, 0.1)),
+                                            "flat",
+                                            new QualitativeConditionalOutcome(ComparisonOperator.GreaterThan, 1, "up"),
+                                            new QualitativeConditionalOutcome(ComparisonOperator.LessThan, 1, "down"));
+
+    QualitativeSimulation simulation = new QualitativeSimulation(param);
+    QualitativeSimulationResults results = simulation.Simulate(_numberOfSimulations);
+
+The above simulation will generate n values from a normal distribution and classify each value as "up", "down", or "flat" depending on whether how the observed value compares to the conditional outcome value (1, in this case). The above simulation could be used to answer the questions, "what percentage of the time do I expected the stock market to rise or fall on a given day?".
+
+Similar to the first example, qualitative simulations can be also be used to simulate the occurence of discrete events without having to explicity define the probability of each outcome. 
+
+    QualitativeRandomBagParameter bag = new QualitativeRandomBagParameter("bag", RandomBagReplacement.AfterEachPick);
+    bag.Add("rare item", 100);
+    bag.Add("uncommon item", 300);
+    bag.Add("common item", 600);
+
+    QualitativeSimulation simulation = new QualitativeSimulation(bag);
+    QualitativeSimulationResults results = simulation.Simulate(_numberOfSimulations);
+
+The above examples serves as a simplified loot table for killing an NPC in a video game. Upon dying, the NPC will drop one item. To determine what item the NPC drops, we have created a theoretical bag containing all possible items. We then added a specific number of each item to the bag, and upon dying, we will reach into the bag and pull out one of these items to give to the player. Imagery aside, what this actually does is generate a simulation identical to the first example in this section, but leaves the hardwork of computing the probabilities to the computer. Additionally, it allows for shifting of probabilities over time (i.e. dependent events) if the "WhenEmpty" or "Never" replacement options are specified. Another simple example of how this could be used is to pick names out of a hat, where every name is added to the hat one time and the simulation results contain the order in which the names were chosen.
+
+Although qualitative simulations can stand on their own, they can be used as parameters for standard simulations when wrapped inside a qualitative interpretation parameter. The jist of this is that we can provide an "interpretation dictionary" to decide how to transform a string back into a number used in the evaluation of our expression. A practical example might be creating a simulation where we will make a "go/no go" decision and then multiple the remainder of the expression by 1 for "go" or 0 for no "go" to compute only the outcomes where we chose to proceed.
 
 ## Parameter Types
 
