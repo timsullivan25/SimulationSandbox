@@ -68,6 +68,30 @@ A dependent simulation is a special type of simulation that occurs over n number
 
 There are a few key things to note here. The expression passed to the simulation constructor must contain a variable named "value". Additionally, only one parameter can be provided in the constructor. This parameter is called the "change parameter" and should be used in the expression to determine how the value will change from period to period. The "value" variable will be replaced each period with the result of evaluating the expression for the previous period. I may consider allowing multiple change parameter inputs in the future, but keep in mind that the change parameter can be a simulation parameter with an unlimited number of other parameters, so the constraint is generally not too much of a limiting factor. 
 
+#### Sensitivity Simulation
+
+This type of simulation is designed to assess the impact of changing one or more variables while holding the rest of the expression constant (constant as in the method in which the values are generated does not change, even though the actual values can still fluctuate). To best illustrate this, I will provide an alternative example of the CAPM expression discussed earlier.
+
+    string expression = "Rf + B * (Rm - Rf)";
+    
+    IParameter[] parameters = new IParameter[]
+    {
+        new PrecomputedParameter("B", new FloatingPoint[] { 0.5, 1.0, 1.5 }),
+        new DistributionParameter("Rm", new Normal(0.08, 0.035)),
+        new PrecomputedParameter("Rf", new FloatingPoint[] { 0.015, 0.02, 0.025 })
+    }
+        
+    Simulation simulation = new Simulation(expression, parameters);
+    SensitivitySimulation sensitivity = new SensitivitySimulation(simulation);
+
+There are two major differences from above. First, the parameters for B and Rf are using a type of parameter called a PrecomputeredParameter. In order to construct a sensitivity simulation, one more more PrecomputedParameters must be used. Second, the SensivitySimulation is constructed by providing it with a simulation that was created with the PrecomputedParameters. 
+
+The simulation will be performed as follows: PrecomputedParameters will be divided into sets, corresponding to the order in which the values were provided. In this case, we would have three sets of parameters for B and Rf, (0.5, 0.015), (1.0, 0.02), and (1.5, 0.025). For each set of parameters, n number of simulations will be performed based on the expression provided, using the PrecomputedParameter values for every simulation and generating a new Rm value each time from the normal distribution. The results of the sensitivity simulation will be a collection of results from the underlying simulations and summary statistics identifying which combination of precomputed values produced the best and worst possible outcomes.
+
+#### Exhaustive Sensitivity Simulation
+
+This is very similar to the sensitivity simulation described above, but with one caveat. In the prior example, sets of PrecomputedParameters were generated based on the order in which the values were provided. For the exhaustive variant of the simulation, all possible combinations of the PrecomputedParameters will be tested. This means that the above example would return 9 result sets instead of three. Obviously, this can lead to a drastic increase in computation time, so this has been broken into a seperate class so the user can choose when to use this version. Additionally, the exhaustive sensitivity simulation provides a multi-threaded version of the Simulate function to speed up computation when resources are available. Neither version of the sensivity simulation can be used as a simulation parameter, although it seems like it would be feasible to implement if there was a need for this in the future.
+
 
 
 ## Parameter Types
