@@ -45,7 +45,7 @@ namespace SimulationTests
         }
 
         [TestMethod]
-        public void Templates_Qualitative_Restaurant()
+        public void Templates_Qualitative_RestaurantPicker()
         {
             try
             {
@@ -65,11 +65,11 @@ namespace SimulationTests
         }
 
         [TestMethod]
-        public void Templates_Qualitative_ShuffleOrder()
+        public void Templates_Qualitative_RestaurantVoter()
         {
             try
             {
-                var results = QualitativeTemplates.ShuffleOrder(null);
+                var results = QualitativeTemplates.RestaurantVoter(null);
             }
             catch (Simulations.Exceptions.EmptyBagException)
             {
@@ -80,7 +80,27 @@ namespace SimulationTests
                 Assert.Fail("Did not catch empty bag exception.");
             }
 
-            List<string> order = QualitativeTemplates.ShuffleOrder("a", "b", "c", "d", "e");
+            string restaurant = QualitativeTemplates.RestaurantVoter(("McDonald's", 3));
+            Assert.AreEqual(restaurant, "McDonald's", "Incorrect restaurant chosen.");
+        }
+
+        [TestMethod]
+        public void Templates_Qualitative_ShuffleItems()
+        {
+            try
+            {
+                var results = QualitativeTemplates.ShuffleItems(null);
+            }
+            catch (Simulations.Exceptions.EmptyBagException)
+            {
+                // success
+            }
+            catch
+            {
+                Assert.Fail("Did not catch empty bag exception.");
+            }
+
+            List<string> order = QualitativeTemplates.ShuffleItems("a", "b", "c", "d", "e");
             Assert.AreEqual(order.Count, 5, "Incorrect number of choices.");
         }
     }

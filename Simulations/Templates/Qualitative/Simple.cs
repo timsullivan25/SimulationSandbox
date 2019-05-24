@@ -85,11 +85,34 @@ namespace Simulations.Templates
         }
 
         /// <summary>
+        /// A helpful method for choosing which restaurant to eat at when no one can agree on a choice. This version allows each restaurant to be given a weighting based on the number of votes it has received from the group. Instead of majority rules, it is now majority has the best chance.
+        /// </summary>
+        /// <param name="restaurants">The name of each restaurant and the number of votes it has received.</param>
+        /// <returns></returns>
+        public static string RestaurantVoter(params (string name, int votes)[] restaurants)
+        {
+            if (restaurants == null || restaurants.Length == 0)
+            {
+                throw new Exceptions.EmptyBagException("You must provide one or more restaurants to choose from.");
+            }
+
+            QualitativeRandomBagParameter choices = new QualitativeRandomBagParameter("restaurants", RandomBagReplacement.Never);
+
+            foreach (var (name, votes) in restaurants)
+            {
+                choices.Add(name, votes);
+            }
+
+            QualitativeSimulationResults results = new QualitativeSimulation(choices).Simulate(1);
+            return results.Results[0];
+        }
+
+        /// <summary>
         /// Shuffles a list of items and then draws all of them from the bag to generate an ordered list. This is essentially a wrapper for the Shuffle extension function, but fits well thematically.
         /// </summary>
         /// <param name="items">Items to be shuffled.</param>
         /// <returns></returns>
-        public static List<string> ShuffleOrder(params string[] items)
+        public static List<string> ShuffleItems(params string[] items)
         {
             if (items == null || items.Length == 0)
             {
