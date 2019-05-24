@@ -1,4 +1,7 @@
-﻿namespace Simulations.Templates
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace Simulations.Templates
 {
     /// <summary>
     /// QualitativeTemplates return the results of the QualitativeSimulation that is created and run using the passed arguments. This happens because QualitativeSimulations only accept one parameter, so there is no reason to return the parameter instead of executing the simulation immediately.
@@ -56,6 +59,52 @@
             }
 
             return new QualitativeSimulation(deck).Simulate(numberOfCards);
+        }
+
+        /// <summary>
+        /// A helpful method for choosing which restaurant to eat at when no one can agree on a choice.
+        /// </summary>
+        /// <param name="restaurants">One or more restuarants from which to choose the place you will eat.</param>
+        /// <returns></returns>
+        public static string RestaurantPicker(params string[] restaurants)
+        {
+            if (restaurants == null || restaurants.Length == 0)
+            {
+                throw new Exceptions.EmptyBagException("You must provide one or more restaurants to choose from.");
+            }
+
+            QualitativeRandomBagParameter choices = new QualitativeRandomBagParameter("restaurants", RandomBagReplacement.Never);
+
+            foreach (string r in restaurants)
+            {
+                choices.Add(r);
+            }
+
+            QualitativeSimulationResults results = new QualitativeSimulation(choices).Simulate(1);
+            return results.Results[0];
+        }
+
+        /// <summary>
+        /// Shuffles a list of items and then draws all of them from the bag to generate an ordered list. This is essentially a wrapper for the Shuffle extension function, but fits well thematically.
+        /// </summary>
+        /// <param name="items">Items to be shuffled.</param>
+        /// <returns></returns>
+        public static List<string> ShuffleOrder(params string[] items)
+        {
+            if (items == null || items.Length == 0)
+            {
+                throw new Exceptions.EmptyBagException("You must provide one or more items to shuffle.");
+            }
+
+            QualitativeRandomBagParameter choices = new QualitativeRandomBagParameter("items", RandomBagReplacement.Never);
+
+            foreach (string i in items)
+            {
+                choices.Add(i);
+            }
+
+            QualitativeSimulationResults results = new QualitativeSimulation(choices).Simulate(items.Length);
+            return results.Results.ToList();
         }
     }
 }

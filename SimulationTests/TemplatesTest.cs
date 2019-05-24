@@ -2,6 +2,7 @@
 using Simulations.Templates;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MathNet.Numerics.Distributions;
+using System.Collections.Generic;
 
 namespace SimulationTests
 {
@@ -41,6 +42,46 @@ namespace SimulationTests
 
             var cards = QualitativeTemplates.DeckOfCards(5);
             Assert.AreEqual(5, cards.NumberOfSimulations, "Incorrect number of cards drawn.");
+        }
+
+        [TestMethod]
+        public void Templates_Qualitative_Restaurant()
+        {
+            try
+            {
+                var results = QualitativeTemplates.RestaurantPicker(null);
+            }
+            catch (Simulations.Exceptions.EmptyBagException)
+            {
+                // success
+            }
+            catch
+            {
+                Assert.Fail("Did not catch empty bag exception.");
+            }
+
+            string restaurant = QualitativeTemplates.RestaurantPicker("McDonald's");
+            Assert.AreEqual(restaurant, "McDonald's", "Incorrect restaurant chosen.");
+        }
+
+        [TestMethod]
+        public void Templates_Qualitative_ShuffleOrder()
+        {
+            try
+            {
+                var results = QualitativeTemplates.ShuffleOrder(null);
+            }
+            catch (Simulations.Exceptions.EmptyBagException)
+            {
+                // success
+            }
+            catch
+            {
+                Assert.Fail("Did not catch empty bag exception.");
+            }
+
+            List<string> order = QualitativeTemplates.ShuffleOrder("a", "b", "c", "d", "e");
+            Assert.AreEqual(order.Count, 5, "Incorrect number of choices.");
         }
     }
 
