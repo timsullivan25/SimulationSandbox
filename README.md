@@ -84,7 +84,7 @@ This type of simulation is designed to assess the impact of changing one or more
     Simulation simulation = new Simulation(expression, parameters);
     SensitivitySimulation sensitivity = new SensitivitySimulation(simulation);
 
-There are two major differences from above. First, the parameters for B and Rf are using a type of parameter called a PrecomputeredParameter. In order to construct a sensitivity simulation, one more more PrecomputedParameters must be used. Second, the SensivitySimulation is constructed by providing it with a simulation that was created with the PrecomputedParameters. 
+There are two major differences from above. First, the parameters for B and Rf are using a type of parameter called a PrecomputedParameter. In order to construct a sensitivity simulation, one more more PrecomputedParameters must be used. Second, the SensivitySimulation is constructed by providing it with a simulation that was created with the PrecomputedParameters. 
 
 The simulation will be performed as follows: PrecomputedParameters will be divided into sets, corresponding to the order in which the values were provided. In this case, we would have three sets of parameters for B and Rf, (0.5, 0.015), (1.0, 0.02), and (1.5, 0.025). For each set of parameters, n number of simulations will be performed based on the expression provided, using the PrecomputedParameter values for every simulation and generating a new Rm value each time from the normal distribution. The results of the sensitivity simulation will be a collection of results from the underlying simulations and summary statistics identifying which combination of precomputed values produced the best and worst possible outcomes.
 
