@@ -48,3 +48,5 @@ TODO:
 
 	- Handle rare case in binomial tree where a node could overlap a node in the same generation that wasn't the last generated node?
 		> not sure how this would actually happen... but maybe using some janky dynamic volatility parameter
+
+	- Correlation between simulation parameters (or other types of parameters)?

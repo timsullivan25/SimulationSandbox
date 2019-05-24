@@ -79,7 +79,7 @@ namespace Simulations
                 {
                     Simulation innerSimulation = (Parameters[p] as ConditionalParameter).ReferenceParameter.Simulation;
                     double[] innerResults = innerSimulation.Simulate(numberOfSimulations).Results;
-                    // we're saying an integer simulation will be converted to double.. we could just use the math.net floating point numbers to over issues here ??
+                    // we're saying an integer simulation will be converted to double.. we could just use the math.net floating point numbers to avoid issues here ??
                     // but the conversion doesn't seem to result in floating point comparison issues.. so we might be good?
 
                     ConditionalOutcome[] conditionalOutcomes = (Parameters[p] as ConditionalParameter).ConditionalOutcomes;
