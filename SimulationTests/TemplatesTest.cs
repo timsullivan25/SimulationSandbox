@@ -135,5 +135,46 @@ namespace SimulationTests
             Assert.AreEqual(1000, results.NumberOfSimulations, "Incorrect number of simulations performed.");
             Assert.AreEqual(7.0, results.Mean, 0.5, "Incorrect mean results.");
         }
+
+        [TestMethod]
+        public void Templates_Quantitative_BlackScholes_Function()
+        {
+            double callPrice = QuantitativeTemplates.BlackScholes(OptionContractType.Call, 210.59, 205, 4/365, 0.1404, 0.2175);
+            double putPrice = QuantitativeTemplates.BlackScholes(OptionContractType.Put, 210.59, 205, 4/365, 0.1404, 0.2175);
+
+            Assert.AreEqual(5.6351, callPrice, 0.10, "Incorrect call price.");
+            Assert.AreEqual(0.0402, putPrice, 0.10, "Incorrect put price.");
+        }
+
+        // Need to review how I'm calculating CDF
+        //[TestMethod]
+        //public void Templates_Quantitative_BlackScholes_Simulation()
+        //{
+        //    ConstantParameter priceOfUnderlyingAsset = new ConstantParameter("St", 210.59);
+        //    ConstantParameter strikePrice = new ConstantParameter("K", 205);
+        //    ConstantParameter timeToMaturity = new ConstantParameter("t", 4/365);
+        //    ConstantParameter standardDeviationOfStocksReturns = new ConstantParameter("o", 0.1404);
+        //    ConstantParameter riskFreeRate = new ConstantParameter("r", 0.2175);
+
+        //    Simulation callSimulation = QuantitativeTemplates.BlackScholes(OptionContractType.Call,
+        //                                                                   priceOfUnderlyingAsset,
+        //                                                                   strikePrice,
+        //                                                                   timeToMaturity,
+        //                                                                   standardDeviationOfStocksReturns,
+        //                                                                   riskFreeRate);
+
+        //    double callPrice = callSimulation.Simulate(1).Results[0];
+        //    //Assert.AreEqual(5.6351, callPrice, 0.10, "Incorrect call price.");
+
+        //    Simulation putSimulation = QuantitativeTemplates.BlackScholes(OptionContractType.Put,
+        //                                                                  priceOfUnderlyingAsset,
+        //                                                                  strikePrice,
+        //                                                                  timeToMaturity,
+        //                                                                  standardDeviationOfStocksReturns,
+        //                                                                  riskFreeRate);
+
+        //    double putPrice = putSimulation.Simulate(1).Results[0];
+        //    Assert.AreEqual(0.0402, putPrice, 0.01, "Incorrect put price.");
+        //}
     }
 }
