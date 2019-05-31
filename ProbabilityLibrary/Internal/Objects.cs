@@ -1,39 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Probability
 {
-    public static class HelperFunctions
-    {
-        /// <summary>
-        /// Returns the product of a set of numbers.
-        /// </summary>
-        /// <param name="numbers">Numbers for which to calculate the product.</param>
-        /// <returns></returns>
-        public static long Product(params long[] numbers)
-        {
-            long product = 1;
-
-            foreach(long number in numbers)
-            {
-                product *= number;
-            }
-
-            return product;
-        }
-    }
-
-    public enum BernoulliTrialOption
-    {
-        Exactly,
-        GreaterThan,
-        GreaterThanOrEqualTo,
-        LessThan,
-        LessThanOrEqualTo
-    }
-
     public class Outcome
     {
         public double Payoff { get; set; }
@@ -89,7 +59,7 @@ namespace Probability
 
             double expectedValue = numberOfIterations * Probability.ExpectedValue(Outcomes.Select(o => (o.Probability, o.Payoff)).ToArray());
             double standardDeviation = Math.Sqrt(
-                                           numberOfIterations 
+                                           numberOfIterations
                                            * Probability.Variance(Outcomes.Select(o => (o.Probability, o.Payoff)).ToArray()));
 
             double zScore = Probability.ZScore(outcome, expectedValue, standardDeviation);

@@ -105,7 +105,6 @@ namespace Probability
             }
 
             return Factorial(n) / HelperFunctions.Product(a.Select(a1 => Factorial(a1)).ToArray());
-        }
-        
+        }  
     }
 }

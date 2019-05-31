@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using MathNet.Numerics.Distributions;
 
@@ -8,36 +6,6 @@ namespace Probability
 {
     public static class Probability
     {
-        /// <summary>
-        /// Calculates the expected value of a set of outcomes based on the probability and payoff of each outcome. You do not need to specify outcomes that have a payoff of 0.
-        /// </summary>
-        /// <param name="outcomes">Probability and corresponding payoff for each outcome.</param>
-        /// <returns></returns>
-        public static double ExpectedValue(params (double probability, double payoff)[] outcomes)
-        {
-            return outcomes.Sum(o => o.probability * o.payoff);
-        }
-        /// <summary>
-        /// Calculates the expected value of a set of outcomes based on the total number of occurrences and payoff of each outcome. You must specify outcomes that have a payout of 0 for the remainder of the probabilities to be calculated correctly.
-        /// </summary>
-        /// <param name="outcomes">Number of occurrences and corresponding payoff for each outcome.</param>
-        /// <returns></returns>
-        public static double ExpectedValue(params (long occurrences, double payoff)[] outcomes)
-        {
-            double totalOccurrences = outcomes.Sum(o => o.occurrences);
-            return ExpectedValue(outcomes.Select(o => (o.occurrences / totalOccurrences, o.payoff)).ToArray());
-        }
-
-        /// <summary>
-        /// Calculates the changes of winning based on the possible scenarios and their specific win rates.
-        /// </summary>
-        /// <param name="winScenarios">A list containing all scenarios with their probability of occurring and their win percentage.</param>
-        /// <returns></returns>
-        public static double WinningPercentage(params (double probabilityOfScenario, double probabilityOfWinning)[] winScenarios)
-        {
-            return winScenarios.Sum(s => s.probabilityOfScenario * s.probabilityOfWinning);
-        }
-
         /// <summary>
         /// Provide three known values and one null value to calculate using Bayres' Theorum: P(A | B) * P(B) = P(B | A) * P(A)
         /// </summary>
@@ -69,7 +37,6 @@ namespace Probability
                 throw new Exception("You must provide exactly one null value and three known values.");
             }
         }
-
         /// <summary>
         /// Calculates the probability of exactly k events occurring in n trials when each trial has exactly two outcomes.
         /// </summary>
@@ -115,7 +82,6 @@ namespace Probability
                     throw new Exception("Invalid BernoulliTrialOption.");
             }  
         }
-
         /// <summary>
         /// Calculates the probability of reaching the ending value on a random walk assuming the change in value is 1 each time.
         /// </summary>
@@ -127,6 +93,35 @@ namespace Probability
         {
             double s = (1 - probabilityOfWinning) / probabilityOfWinning;
             return (Math.Pow(s, startingValue) - 1) / (Math.Pow(s, endingValue) - 1);
+        }
+
+        /// <summary>
+        /// Calculates the expected value of a set of outcomes based on the probability and payoff of each outcome. You do not need to specify outcomes that have a payoff of 0.
+        /// </summary>
+        /// <param name="outcomes">Probability and corresponding payoff for each outcome.</param>
+        /// <returns></returns>
+        public static double ExpectedValue(params (double probability, double payoff)[] outcomes)
+        {
+            return outcomes.Sum(o => o.probability * o.payoff);
+        }
+        /// <summary>
+        /// Calculates the expected value of a set of outcomes based on the total number of occurrences and payoff of each outcome. You must specify outcomes that have a payout of 0 for the remainder of the probabilities to be calculated correctly.
+        /// </summary>
+        /// <param name="outcomes">Number of occurrences and corresponding payoff for each outcome.</param>
+        /// <returns></returns>
+        public static double ExpectedValue(params (long occurrences, double payoff)[] outcomes)
+        {
+            double totalOccurrences = outcomes.Sum(o => o.occurrences);
+            return ExpectedValue(outcomes.Select(o => (o.occurrences / totalOccurrences, o.payoff)).ToArray());
+        }
+        /// <summary>
+        /// Calculates the changes of winning based on the possible scenarios and their specific win rates.
+        /// </summary>
+        /// <param name="winScenarios">A list containing all scenarios with their probability of occurring and their win percentage.</param>
+        /// <returns></returns>
+        public static double WinningPercentage(params (double probabilityOfScenario, double probabilityOfWinning)[] winScenarios)
+        {
+            return winScenarios.Sum(s => s.probabilityOfScenario * s.probabilityOfWinning);
         }
 
         /// <summary>
@@ -149,7 +144,6 @@ namespace Probability
             double totalOccurrences = outcomes.Sum(o => o.occurrences);
             return Variance(outcomes.Select(o => (o.occurrences / totalOccurrences, o.payoff)).ToArray());
         }
-
         /// <summary>
         /// Calculates the standard deviation of a set of outcomes based on the probability and payoff of each outcome. You must specify outcomes that have a payoff of 0.
         /// </summary>
@@ -182,7 +176,6 @@ namespace Probability
         {
             return (targetValue - expectedValue) / standardDeviation;
         }
-
         /// <summary>
         /// Calculates the area under the curve (probability) to the left or right of the z-score.
         /// </summary>
@@ -195,7 +188,6 @@ namespace Probability
             double probability = normal.CumulativeDistribution(zScore);
             return lessThan ? probability : 1 - probability;
         }
-
         /// <summary>
         /// Calculates the probability of an event occurring inside or outside the range between two z-scores.
         /// </summary>
@@ -208,7 +200,6 @@ namespace Probability
             double boundedProbability = ZScoreToProbability(upperBound) - ZScoreToProbability(lowerBound);
             return between ? boundedProbability : 1 - boundedProbability;
         }
-
         /// <summary>
         /// Converts an outcome into its equivalent z-score. Essentially, how many standard deviations the outcome is from the mean.
         /// </summary>
