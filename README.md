@@ -228,7 +228,7 @@ The slightly annoying thing about the Qualitative Parameter described above is t
 
 ## Black-Scholes / Complex Expression Demo
 
-Before moving to the probability, I thought it would be good to include an in-depth look at defining a complex simulation and making it easy to use via templates. The code below is taken from Simulations\Templates\Quantitative\Financial.
+Before moving on to probability, I thought it would be good to include an in-depth look at defining a complex simulation and making it easy to use via templates. The code below is taken from Simulations\Templates\Quantitative\Financial.
 
     public static Simulation BlackScholes(OptionContractType optionContractType,
                                           IParameter priceOfUnderlyingAsset,
