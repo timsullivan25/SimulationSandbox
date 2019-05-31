@@ -1,0 +1,155 @@
+﻿# Counting
+
+## Numbers Between
+
+The number of numbers between two numbers can be calulated using the formula:
+	
+	n - k + 1
+
+## Multiplication Principle
+
+This is used to calculate the number of sequences when choosing k items from a collection of n objects. If repetition is allowed, the formula is:
+
+	n ^ k
+
+If repetition is not allowed, the formula is:
+
+	n! / (n - k)!
+
+If you have multiple groups, the total number of sequences can be determined by taking the product of the number of sequences for each group. However, this relies upon the assumption that the order the groups occurs in remains constant. If this is not the case, there are not actually multiple groups and this problem should be handled using one of the above formulas.
+
+## Subtraction Principle
+
+The number of objects in a collection that satisfy some condition is equal to the number of objects in the collection minus the number of objects that do not satisfy the condition.
+
+For example:
+
+- Determine the number of four letter combinations that contain a vowel
+- 26^4 = total combinations
+- 26 letters - 5 vowels = 21 consonants ^ 4 = number of combinations without a vowel
+- 26^4 - 21^4 = number of combinations with a vowel
+
+Note: If you subtract the same item twice, you must remember to add it back.
+
+## Collections
+
+Sequence vs Collection --> Sequences are ordered. Collections are unordered.
+
+Number of collections of k objects chosen without repetition from a set of n objects:
+
+	n! / ((n - k)! * k!)
+
+Binomial coefficient is another name of collections and has its own mathematical notation:
+
+	(n)
+	(k)
+
+The above literally means "n choose k" or from a set of n objects, choose k objects without repetition.
+
+Binomial coefficients have a number of helpful properties. The first property is:
+
+	(n) = (n)
+	(k) = (n - k)
+
+Essentially, the number of ways of choosing a collection of k objects from a set is the same as the number of ways of choosing n - k objects. This is true because when you choose k objects you are also indirectly selection n - k objects not to choose.
+
+Recursion rule:
+
+	(n) = (n - 1) + (n - 1)
+	(k) = (  k  ) + (k - 1)
+
+An example of the above is that the total number of 5 card poker hands is equal to the number of hands that don't contain the ace of spades (n - 1 / k) plus the number of hands the do contain the ace of spades (n - 1 / k - 1). There is always one less card once the first card has been chosen, but the number of remaining cards to choose depends on whether the first card dealt was the ace of spaces.
+
+### Multinomial Coefficient
+
+This is used to divide a pool of objects into k collections of predetermined size. The formula is as follows:
+
+	n! / (a1! * a2! * ak!)
+
+Each a represents the number of items in the subcollection. The total number of items in all collections should equal n.
+
+### Collections with repetition
+
+The formula is:
+
+	(n + k - 1)
+	(n - 1) || (k)
+
+n represents the number of items to choose from. k is the number of times you will choose an item.
+
+Essentially, you need to account for the possibility of picking every possible item, and therefore assume that you need n - 1 dividers to seperate the different items. From there, you will calculate the number of ways the dividers can be inserted between the items that you are picking. This will give you the total number of possible combinations.
+
+# Game Attributes
+
+Effect of altering the payouts of a game:
+
+G = game
+c = constant
+d = factor
+H = second game
+
+       G + c      | d * G        | G + H
+	   -----------|--------------|----------------
+EV	   ev(G) + c  | d * ev(G)    | ev(G) + ev(H)
+o^2	   o^2(G)     | d^2 * o^2(G) | o^2(G) + o^2(H)
+
+- Adding a constant does not change the variance
+- Games can be added together when they are indepedent
+- d * G assumes the payouts are altered; if the game is being iterated, variance is d * o^2(G) for the series of games
+
+Using the conclusion from G + H, we can then determine that a game played n times has an expected value of n *  ev(G) and a variance of n * o^2(G).
+
+### Normalizing A Game
+
+[G(100) - 50] / 5
+
+G(100) = 100 coin flips
+50 = expected value of 100 coin flips
+5 = sqrt(25)
+	25 = variance of 100 coin flips
+
+Therefore:
+
+	G(n)0 = [G(N) - EV] / sd
+
+To analyze a payoff on the original game as a payoff in the normalized game:
+
+	z = (payoff - EV) / sd
+
+### Converting to a Normalized Game
+
+Step 1: Define the non-normalized game
+
+	Pay 4 to roll a die
+	Get the number showing on the die back
+
+Step 2: Choose a number of iterations
+
+	Decide to roll the die 100 times
+
+Step 3: Calculate expected value
+
+	EV G(100) = EV G(1) * 100
+	EV G(100) = 3.5 * 100 = 350
+
+Step 4: Calculate the standard deviation
+
+	var = 0.1667(1 - 3.5)^2 + ... + 0.1667(6 - 3.5)^2
+	var = 2.916667
+	scaledVar = 2.916667 * 100 ~ 291.7
+	SD = sqrt(scaledVar) = 17.08
+
+Step 5: Define the normalized game
+
+	[G(100) - 350] / SD
+
+Step 6: Calculate z-score of any outcome by substituting for G(100)
+
+	z-score = [target - EV] / SD
+
+	target = 4 (B/E)
+	2.9277 = [400 - 350] / 17.08
+
+Step 7: Convert z-score to probability
+
+	2.9277 ~ 0.17% chance
