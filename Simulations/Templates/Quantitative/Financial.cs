@@ -28,14 +28,14 @@ namespace Simulations.Templates
         /// <param name="priceOfUnderlyingAsset">Price of underlying asset at time t.</param>
         /// <param name="strikePrice">Strike price of option.</param>
         /// <param name="timeToMaturity">Time to maturity in years.</param>
-        /// <param name="standardDeviationOfStocksReturns">Standard deviation of stock's returns. Square root of the quadratic variation of the stock's log price process.</param>
+        /// <param name="volatilityOfReturns">Standard deviation of stock's returns. Square root of the quadratic variation of the stock's log price process.</param>
         /// <param name="riskFreeRate">Annualized risk-free interest rate, continuously compounded.</param>
         /// <returns></returns>
         public static double BlackScholes(OptionContractType optionContractType, 
                                           double priceOfUnderlyingAsset,
                                           double strikePrice,
                                           double timeToMaturity,
-                                          double standardDeviationOfStocksReturns,
+                                          double volatilityOfReturns,
                                           double riskFreeRate)
         {            
             // S(t)   = the price of the underlying asset at time t
@@ -58,11 +58,11 @@ namespace Simulations.Templates
 
                 Normal normal = new Normal();
 
-                double d1 = (1 / (standardDeviationOfStocksReturns * Math.Sqrt(timeToMaturity)))
+                double d1 = 1 / volatilityOfReturns / Math.Sqrt(timeToMaturity)
                             * (Math.Log(priceOfUnderlyingAsset / strikePrice)
-                               + (riskFreeRate + ((Math.Pow(standardDeviationOfStocksReturns, 2) / 2) * timeToMaturity)));
+                               + (riskFreeRate + Math.Pow(volatilityOfReturns, 2) / 2) * timeToMaturity);
 
-                double d2 = d1 - (standardDeviationOfStocksReturns * Math.Sqrt(timeToMaturity));
+                double d2 = d1 - volatilityOfReturns * Math.Sqrt(timeToMaturity);
                 double PV_K = strikePrice * Math.Pow(Math.E, -riskFreeRate * timeToMaturity);
                
                 return normal.CumulativeDistribution(d1) * priceOfUnderlyingAsset
@@ -77,7 +77,7 @@ namespace Simulations.Templates
                                                       priceOfUnderlyingAsset,
                                                       strikePrice,
                                                       timeToMaturity,
-                                                      standardDeviationOfStocksReturns,
+                                                      volatilityOfReturns,
                                                       riskFreeRate);
 
                 double PV_K = strikePrice * Math.Pow(Math.E, -riskFreeRate * timeToMaturity);
@@ -92,66 +92,69 @@ namespace Simulations.Templates
         /// <param name="priceOfUnderlyingAsset">Price of underlying asset at time t.</param>
         /// <param name="strikePrice">Strike price of option.</param>
         /// <param name="timeToMaturity">Time to maturity in years.</param>
-        /// <param name="standardDeviationOfStocksReturns">Standard deviation of stock's returns. Square root of the quadratic variation of the stock's log price process.</param>
+        /// <param name="volatilityOfReturns">Standard deviation of stock's returns. Square root of the quadratic variation of the stock's log price process.</param>
         /// <param name="riskFreeRate">Annualized risk-free interest rate, continuously compounded.</param>
         /// <returns></returns>
         public static Simulation BlackScholes(OptionContractType optionContractType,
                                               IParameter priceOfUnderlyingAsset,
                                               IParameter strikePrice,
                                               IParameter timeToMaturity,
-                                              IParameter standardDeviationOfStocksReturns,
+                                              IParameter volatilityOfReturns,
                                               IParameter riskFreeRate)
         {
-            // NOTE: The subsequent string manipulation is my attempt at a slightly dirty hack to compute the CDF of d1 and d2 inside the simulation's expression. Originally, I had planned to use the DistributionFunctionParameter, but realized that the issue with this is that breaking this simulation into seperate equations would cause values used by multiple equations to be resimulated for each equation... Essentially, they would not be consistent between different equations in the same simulation, so the answer would have been useless. I am not entirely sure my workaround solves this issue, but by testing this against the above function I should be able to draw a conclusion as to whether or not this works. Hopefully it does, because I don't have a better idea as to how to allow Black-Scholes simulations in the context of the generic simulation. If it doesn't work, Black-Scholes will need to become it's own simulation type and the parameters will all need to be converted to precomputed parameters so that the equations can be broken up without issue.
-            
+            // NOTE: The subsequent string manipulation is my attempt at a slightly dirty hack to compute the CDF of d1 and d2 inside the simulation's expression. Originally, I had planned to use the DistributionFunctionParameter, but realized that the issue with this is that breaking the simulation into seperate equations would cause values used by multiple equations to be resimulated for each equation... Essentially, they would not be consistent between different equations in the same simulation, so the answer would have been useless. This workaround seems to generate option prices within ~0.05 of the above function, which I consider to be a success based on the sheer number of calculations being performed which leaves ample room for rounding errors. I have checked the formulas pretty closely, but it is possible there is still a typo lurking some where as well.
+      
 
             // rename parameters to work with shortened version of equation
             priceOfUnderlyingAsset.Name = "St";
             strikePrice.Name = "K";
             timeToMaturity.Name = "t";
-            standardDeviationOfStocksReturns.Name = "o";
+            volatilityOfReturns.Name = "o";
             riskFreeRate.Name = "r";
 
             // create the pieces needed to form either expression
-            string d1 = "((1 / o * t^0.5) * (ln(St / K) + (r + o^2 / 2) * t))";
-            string d2 = "(((1 / o * t^0.5) * (ln(St / K) + (r + o^2 / 2) * t)) - o * t^0.5)";
-            string PV_K = "(K * e^(-r * t))";
+            string d1 = "(1 / o / sqrt(t) * (ln(St / K) + (r + o^2 / 2) * t))";
+            string d2 = "((1 / o / sqrt(t) * (ln(St / K) + (r + o^2 / 2) * t)) - o * sqrt(t))";
+            string PV_K = "(K * exp(-r * t))";
+
+            string a1 = "0.254829592";
+            string a2 = "-0.284496736";
+            string a3 = "1.421413741";
+            string a4 = "-1.453152027";
+            string a5 = "1.061405429";
+            string p  = "0.3275911";
+
+            string x1 = $"(abs({d1}) / sqrt(2))";
+            string x2 = $"(abs({d2}) / sqrt(2))";
+
+            string t1 = $"(1 / (1 + {p} * {x1}))";
+            string t2 = $"(1 / (1 + {p} * {x2}))";
+
+            string sign = optionContractType == OptionContractType.Call ? "+" : "-";
+            string N1 = $"(0.5 * (1 {sign} (1 - ((((({a5}*{t1} + {a4})*{t1}) + {a3})*{t1} + {a2})*{t1} + {a1})*{t1}*exp(-{x1}*{x1}))))";
+            string N2 = $"(0.5 * (1 {sign} (1 - ((((({a5}*{t2} + {a4})*{t2}) + {a3})*{t2} + {a2})*{t2} + {a1})*{t2}*exp(-{x2}*{x2}))))";
 
             // create simulation based on type of option
             if (optionContractType == OptionContractType.Call)
             {
-                // d's are positive for call option
-                string t1 = $"(1 / (1 + 0.3275911 * {d1}))";
-                string t2 = $"(1 / (1 + 0.3275911 * {d2}))";
-
-                string N1 = $"(1 - ((((((1.061405429 * {t1} + -1.453152027) * {t1}) + 1.421413741) * {t1} + -0.284496736) * {t1}) + 0.254829592) * {t1} * e^(-1 * {d1} * {d1}))";
-                string N2 = $"(1 - ((((((1.061405429 * {t2} + -1.453152027) * {t2}) + 1.421413741) * {t2} + -0.284496736) * {t2}) + 0.254829592) * {t2} * e^(-1 * {d2} * {d2}))";
-
                 string expression = $"{N1} * St - {N2} * {PV_K}";
 
                 return new Simulation(expression,
                                       priceOfUnderlyingAsset,
                                       strikePrice,
                                       timeToMaturity,
-                                      standardDeviationOfStocksReturns,
+                                      volatilityOfReturns,
                                       riskFreeRate);
             }
             else
             {
-                // d's are negative for put option
-                string t1 = $"(1 / (1 + 0.3275911 * -{d1}))";
-                string t2 = $"(1 / (1 + 0.3275911 * -{d2}))";
-
-                string N1 = $"(1 - ((((((1.061405429 * {t1} + -1.453152027) * {t1}) + 1.421413741) * {t1} + -0.284496736) * {t1}) + 0.254829592) * {t1} * e^(-1 * -{d1} * -{d1}))";
-                string N2 = $"(1 - ((((((1.061405429 * {t2} + -1.453152027) * {t2}) + 1.421413741) * {t2} + -0.284496736) * {t2}) + 0.254829592) * {t2} * e^(-1 * -{d2} * -{d2}))";
-
-                string expression = $"{N2} * {PV_K} - {N2} * St";
+                string expression = $"{N2} * {PV_K} - {N1} * St";
 
                 return new Simulation(expression,
                                       priceOfUnderlyingAsset,
                                       strikePrice,
                                       timeToMaturity,
-                                      standardDeviationOfStocksReturns,
+                                      volatilityOfReturns,
                                       riskFreeRate);
             }
         }
