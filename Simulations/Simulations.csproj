@@ -73,6 +73,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FunctionSimulation.cs" />
     <Compile Include="Internal\Objects.cs" />
     <Compile Include="Internal\Enums.cs" />
     <Compile Include="Internal\Exceptions.cs" />

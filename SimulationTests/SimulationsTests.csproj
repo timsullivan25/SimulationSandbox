@@ -78,6 +78,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="FunctionSimulationTests.cs" />
     <Compile Include="MathNetSymbolicsTests.cs" />
     <Compile Include="DependentSimulationTests.cs" />
     <Compile Include="BinomialTreeTests.cs" />
