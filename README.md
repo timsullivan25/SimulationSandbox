@@ -226,6 +226,83 @@ A parameter that conceptually resembles a bag containing objects that correspond
 
 The slightly annoying thing about the Qualitative Parameter described above is that you must ensure you provide probabilities that sum to 100%. This parameter is essentially a shortcut for creating the first parameter. You simply decide how many of each item (outcome) should be include in the "bag" and the code does the hardwork of calculating the probability of each item being selected. Thematically, each simulation is essentially picking an item at random from the hat. However, the one distinguishing factor from the basic Qualitative Parameter is that you can specify a replacement strategy of always, when empty, or never, which allows for the probabilities of each outcome to change on subsequent simulations, if desired.
 
+## Black-Scholes / Complex Expression Demo
+
+Before moving on to probability, I thought it would be good to include an in-depth look at defining a complex simulation and making it easy to use via templates. The code below is taken from Simulations\Templates\Quantitative\Financial.
+
+    public static Simulation BlackScholes(OptionContractType optionContractType,
+                                          IParameter priceOfUnderlyingAsset,
+                                          IParameter strikePrice,
+                                          IParameter timeToMaturity,
+                                          IParameter volatilityOfReturns,
+                                          IParameter riskFreeRate)
+    {
+        // rename parameters to work with shortened version of equation
+        priceOfUnderlyingAsset.Name = "St";
+        strikePrice.Name = "K";
+        timeToMaturity.Name = "t";
+        volatilityOfReturns.Name = "o";
+        riskFreeRate.Name = "r";
+
+        // create the pieces needed to form either expression
+        string d1 = "(1 / o / sqrt(t) * (ln(St / K) + (r + o^2 / 2) * t))";
+        string d2 = "((1 / o / sqrt(t) * (ln(St / K) + (r + o^2 / 2) * t)) - o * sqrt(t))";
+        string PV_K = "(K * exp(-r * t))";
+
+        string a1 = "0.254829592";
+        string a2 = "-0.284496736";
+        string a3 = "1.421413741";
+        string a4 = "-1.453152027";
+        string a5 = "1.061405429";
+        string p  = "0.3275911";
+
+        string x1 = $"(abs({d1}) / sqrt(2))";
+        string x2 = $"(abs({d2}) / sqrt(2))";
+
+        string t1 = $"(1 / (1 + {p} * {x1}))";
+        string t2 = $"(1 / (1 + {p} * {x2}))";
+
+        string sign = optionContractType == OptionContractType.Call ? "+" : "-";
+        string N1 = $"(0.5 * (1 {sign} (1 - ((((({a5}*{t1} + {a4})*{t1}) + {a3})*{t1} + {a2})*{t1} + {a1})*{t1}*exp(-{x1}*{x1}))))";
+        string N2 = $"(0.5 * (1 {sign} (1 - ((((({a5}*{t2} + {a4})*{t2}) + {a3})*{t2} + {a2})*{t2} + {a1})*{t2}*exp(-{x2}*{x2}))))";
+
+        // create simulation based on type of option
+        if (optionContractType == OptionContractType.Call)
+        {
+            string expression = $"{N1} * St - {N2} * {PV_K}";
+
+            return new Simulation(expression,
+                                  priceOfUnderlyingAsset,
+                                  strikePrice,
+                                  timeToMaturity,
+                                  volatilityOfReturns,
+                                  riskFreeRate);
+        }
+        else
+        {
+            string expression = $"{N2} * {PV_K} - {N1} * St";
+
+            return new Simulation(expression,
+                                  priceOfUnderlyingAsset,
+                                  strikePrice,
+                                  timeToMaturity,
+                                  volatilityOfReturns,
+                                  riskFreeRate);
+        }
+    }
+
+Before diving into it, I would like to give credit to [John D. Cook's Stack Overflow post](https://stackoverflow.com/a/2329269) for helping me figure out how to calculate the Cumulative Normal Distribution Function the hard way.
+
+On a standalone basis, I will admit that the above simulation was more work than is necessary to compute option prices using the Black-Scholes model. In the same file, I have included a simpler function that computes the option price without creating a simulation. However, I believe the extra effort is worth it in order to take advantage of the features included with Simulations.
+
+First, let's address the expression. This expression is easily the longest and most involved one I have written. Normally, I would have broken something like this into multiple simulations and linked them together, but that was not possible in this case because the same variables are being reused in multiple sub-expressions, so the values must stay consistent throughout each simulation. That being said, it is still possible to do something very similar by writing chunks of longer expression and then concatenating the strings together.
+
+Everything from "string a1" to "string N2" is a neat way to calculate the CDF of the normal distribution using basic mathematical operations. This was necessary because MathNet.Symbolics does not have a built-in way to do this in an expression. However, I do give it props for being able to handle abs, exp, ln, sqrt, etc... and keep up with the plethora of parentheses and operations. This simulation alone gives me great confidence in the ability of the library to handle complex algebraic expressions.
+
+The beauty of the template is that all this code is shielded from the user, and they simply have to provide six parameters in order to generate a copy of this simulation. The advantages the simulation provides over the function is that it allows for scenario and sensitivity analysis using any of the parameters discussed prior to this section. For example, you can input an estimate or range of implied volatilities and calculate the option price in each scenario and therefore an average option price. You could also take advantage of sensitivity analysis by providing a set of precomputed strike prices. You could then calculate the price of the option at every strike price and compare that to the market prices of different options to identify anything that is under or overpriced. 
+
+The advantage of the simulation is two-fold. First, you do not need to know all of the inputs precisely in order to get an understanding of the value of an option. Second, you can quickly perform sensitivity analysis on any combination of parameters without having to deal with any complicated set-up. This goes back to the vision of the simulation library -- as long as a problem can be defined by an algebraic expression, then it can be turned into a simulation and analyzed with relative ease. 
+
 # Probability
 
 The probability library is a recent addition to address those situations where a more precise analysis of the expected outcome is needed. It is currently broken in Counting and a Probability classes, which are detailed below. The ultimate vision for this project would be to add one more module called "Optimizations" that will work in sync with Simulations to determine how to achieve the optimal or desired outcome. Together, Probability, Simulations, and Optimizations should provide all the tools necessary to make good decision in almost any situation.
