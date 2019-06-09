@@ -1085,6 +1085,185 @@ namespace Simulations
 
                 #endregion
             }
+            else if (parameter is IQualitativeParameter iQualitativeParameter && passthroughIParams == false)
+            {
+                string[] qualitativeResults = new string[numberOfSimulations];
+
+                #region Qualitative Parameter (exhaustive outcomes)
+
+                if (iQualitativeParameter is QualitativeParameter)
+                {
+                    // generate array of values between 0 and 1
+                    double[] randomProbabilities = MathNet.Numerics.Generate.Random(numberOfSimulations, new ContinuousUniform(0d, 1d));
+
+                    // go through array of values and use cumulative probability of outcomes to determine the value for each simulation
+                    for (int s = 0; s < numberOfSimulations; s++)
+                    {
+                        QualitativeOutcome[] possibleOutcomes = (iQualitativeParameter as QualitativeParameter).PossibleOutcomes;
+
+                        for (int o = 0; o < possibleOutcomes.Length; o++)
+                        {
+                            if (randomProbabilities[s] <= possibleOutcomes[o]._cumulativeProbability)
+                            {
+                                qualitativeResults[s] = possibleOutcomes[o].Value;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region Conditional Parameter (based on underlying simulation)
+
+                else if (iQualitativeParameter is QualitativeConditionalParameter)
+                {
+                    // get results of underlying simulation
+                    Simulation underlyingSimulation = new Simulation(expression: (iQualitativeParameter as QualitativeConditionalParameter).ReferenceParameter.Name,
+                                                                     parameters: (iQualitativeParameter as QualitativeConditionalParameter).ReferenceParameter);
+
+                    double[] underlyingResults = underlyingSimulation.Simulate(numberOfSimulations).Results;
+
+                    // interpret results
+                    QualitativeConditionalOutcome[] conditionalOutcomes = (iQualitativeParameter as QualitativeConditionalParameter).ConditionalOutcomes;
+
+                    for (int s = 0; s < underlyingResults.Length; s++)
+                    {
+                        bool valueAssigned = false;
+
+                        for (int c = 0; c < conditionalOutcomes.Length; c++)
+                        {
+                            switch (conditionalOutcomes[c].ComparisonOperator)
+                            {
+                                case ComparisonOperator.Equal:
+                                    if (underlyingResults[s] == conditionalOutcomes[c].ConditionalValue)
+                                    {
+                                        qualitativeResults[s] = conditionalOutcomes[c].ReturnValue;
+                                        valueAssigned = true;
+                                    }
+                                    break;
+                                case ComparisonOperator.NotEqual:
+                                    if (underlyingResults[s] != conditionalOutcomes[c].ConditionalValue)
+                                    {
+                                        qualitativeResults[s] = conditionalOutcomes[c].ReturnValue;
+                                        valueAssigned = true;
+                                    }
+                                    break;
+                                case ComparisonOperator.LessThan:
+                                    if (underlyingResults[s] < conditionalOutcomes[c].ConditionalValue)
+                                    {
+                                        qualitativeResults[s] = conditionalOutcomes[c].ReturnValue;
+                                        valueAssigned = true;
+                                    }
+                                    break;
+                                case ComparisonOperator.LessThanOrEqual:
+                                    if (underlyingResults[s] <= conditionalOutcomes[c].ConditionalValue)
+                                    {
+                                        qualitativeResults[s] = conditionalOutcomes[c].ReturnValue;
+                                        valueAssigned = true;
+                                    }
+                                    break;
+                                case ComparisonOperator.GreaterThan:
+                                    if (underlyingResults[s] > conditionalOutcomes[c].ConditionalValue)
+                                    {
+                                        qualitativeResults[s] = conditionalOutcomes[c].ReturnValue;
+                                        valueAssigned = true;
+                                    }
+                                    break;
+                                case ComparisonOperator.GreaterThanOrEqual:
+                                    if (underlyingResults[s] >= conditionalOutcomes[c].ConditionalValue)
+                                    {
+                                        qualitativeResults[s] = conditionalOutcomes[c].ReturnValue;
+                                        valueAssigned = true;
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            if (valueAssigned)
+                                break;
+                        }
+
+                        if (!valueAssigned)
+                            qualitativeResults[s] = (iQualitativeParameter as QualitativeConditionalParameter).DefaultValue;
+                    }
+                }
+
+                #endregion
+
+                #region Random Bag Parameter
+
+                else if (iQualitativeParameter is QualitativeRandomBagParameter)
+                {
+                    QualitativeRandomBagParameter randomBag = (QualitativeRandomBagParameter)iQualitativeParameter;
+                    if (randomBag.IsEmpty) throw new EmptyBagException($"QualitativeRandomBag parameters must contain at least one object before they can be used in a simulation.");
+                    string[] selections = new string[numberOfSimulations];
+
+                    if (randomBag.ReplacementRule == RandomBagReplacement.AfterEachPick)
+                    {
+                        string[] contents = randomBag.ContentsToArray();
+                        int[] selectedIndices = new int[numberOfSimulations];
+                        DiscreteUniform distribution = new DiscreteUniform(0, randomBag.NumberOfItems - 1);
+                        distribution.Samples(selectedIndices);
+
+                        for (int i = 0; i < numberOfSimulations; i++)
+                            selections[i] = contents[selectedIndices[i]];
+                    }
+                    else if (randomBag.ReplacementRule == RandomBagReplacement.Never)
+                    {
+                        // validate we can choose the correct number of items
+                        if (randomBag.NumberOfItems < numberOfSimulations)
+                            throw new RandomBagItemCountException($"{numberOfSimulations} selections were requested from a bag containing {randomBag.NumberOfItems} items. This is not possible when the replacement rule is set to never.");
+
+                        // choose without replacement
+                        string[] contents = randomBag.ContentsToArray();
+                        int[] selectionOrder = Enumerable.Range(0, randomBag.NumberOfItems).ToArray();
+                        selectionOrder.Shuffle();
+
+                        for (int i = 0; i < numberOfSimulations; i++)
+                            selections[i] = contents[selectionOrder[i]];
+                    }
+                    else if (randomBag.ReplacementRule == RandomBagReplacement.WhenEmpty)
+                    {
+                        string[] contents = randomBag.ContentsToArray();
+                        int numberOfRefills = (numberOfSimulations / randomBag.NumberOfItems) - (numberOfSimulations % randomBag.NumberOfItems == 0 ? 1 : 0);
+                        int[] selectionOrder = new int[(numberOfRefills + 1) * numberOfSimulations];
+
+                        // simulate refilling the bag to get enough indices to satisfy the number of simulations
+                        for (int i = 0; i < numberOfRefills + 1; i++)
+                        {
+                            int[] roundSelectionOrder = Enumerable.Range(0, randomBag.NumberOfItems).ToArray();
+                            roundSelectionOrder.Shuffle();
+
+                            for (int j = 0; j < roundSelectionOrder.Length; j++)
+                                selectionOrder[j + (i * randomBag.NumberOfItems)] = roundSelectionOrder[j];
+                        }
+
+                        for (int i = 0; i < numberOfSimulations; i++)
+                            selections[i] = contents[selectionOrder[i]];
+                    }
+                    else
+                    {
+                        throw new RandomBagReplacementRuleException($"{randomBag.ReplacementRule} is not a valid replacement rule.");
+                    }
+
+                    qualitativeResults = selections;
+                }
+
+                #endregion
+
+                #region Invalid Parameter
+
+                else
+                {
+                    throw new InvalidParameterException($"{iQualitativeParameter.Name} is not a valid qualitative parameter.");
+                }
+
+                #endregion
+
+                return UntypeArray(qualitativeResults);
+            }
             else if (parameter is IDiscreteDistribution discreteDistribution)
             {
                 // must use integers for discrete distributions
