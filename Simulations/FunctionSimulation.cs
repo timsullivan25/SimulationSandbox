@@ -129,8 +129,8 @@ namespace Simulations
         public T[] Simulate(int numberOfSimulations, bool passthroughIParams = false)
         {
             // generate input parameters
-            object[] p2 = ParameterParsing.GetParameterValues<T1>(Parameters[1], numberOfSimulations, passthroughIParams);
-            object[] p1 = ParameterParsing.GetParameterValues<T2>(Parameters[0], numberOfSimulations, passthroughIParams);
+            object[] p1 = ParameterParsing.GetParameterValues<T1>(Parameters[0], numberOfSimulations, passthroughIParams);
+            object[] p2 = ParameterParsing.GetParameterValues<T2>(Parameters[1], numberOfSimulations, passthroughIParams);          
 
             // run function specified number of times
             T[] results = new T[numberOfSimulations];
