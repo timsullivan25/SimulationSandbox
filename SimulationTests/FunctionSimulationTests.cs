@@ -59,6 +59,12 @@ namespace SimulationTests
 
             double[] results2 = simulationDirectDistribution.Simulate(1000);
             Assert.AreEqual(15, results2.Average(r => r), 0.25);
+
+            // test passing constructor
+            FunctionSimulation<ICollection<double>, ListOfInputs> simulationConstructor =
+                new FunctionSimulation<ICollection<double>, ListOfInputs>(CreateListOfInputs,  results);
+
+            Assert.IsTrue(simulationConstructor.Simulate(1)[0] is ListOfInputs);
         }
 
         private double Mirror(double simulationAverage)
@@ -69,6 +75,11 @@ namespace SimulationTests
         private double AvgAvg(Simulation simulation)
         {
             return simulation.Simulate(1000).Mean;
+        }
+
+        private ListOfInputs CreateListOfInputs(ICollection<double> inputs)
+        {
+            return new ListOfInputs(inputs.Select(i => (object)i).ToArray());
         }
 
         #endregion
