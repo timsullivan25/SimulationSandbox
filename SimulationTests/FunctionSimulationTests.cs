@@ -61,10 +61,10 @@ namespace SimulationTests
             Assert.AreEqual(15, results2.Average(r => r), 0.25);
 
             // test passing constructor
-            FunctionSimulation<ICollection<double>, ListOfInputs> simulationConstructor =
-                new FunctionSimulation<ICollection<double>, ListOfInputs>(CreateListOfInputs,  results);
+            FunctionSimulation<ICollection<double>, FunctionSimulation<double, double>> simulationConstructor =
+                new FunctionSimulation<ICollection<double>, FunctionSimulation<double, double>>(CreateListOfInputs, results);
 
-            Assert.IsTrue(simulationConstructor.Simulate(1)[0] is ListOfInputs);
+            Assert.IsTrue(simulationConstructor.Simulate(1)[0] is FunctionSimulation<double, double>);
         }
 
         private double Mirror(double simulationAverage)
@@ -77,9 +77,9 @@ namespace SimulationTests
             return simulation.Simulate(1000).Mean;
         }
 
-        private ListOfInputs CreateListOfInputs(ICollection<double> inputs)
+        private FunctionSimulation<double, double> CreateListOfInputs(ICollection<double> inputs)
         {
-            return new ListOfInputs(inputs.Select(i => (object)i).ToArray());
+            return new FunctionSimulation<double, double>(Mirror, inputs);
         }
 
         #endregion
@@ -110,7 +110,7 @@ namespace SimulationTests
             QualitativeSimulationResults coinFlip = QualitativeTemplates.CoinFlip(1000);
 
             FunctionSimulation<string, int, int, int> simulation = 
-                new FunctionSimulation<string, int, int, int>(CoinFlip, new ListOfInputs(coinFlip.Results), 3, 4);
+                new FunctionSimulation<string, int, int, int>(CoinFlip, coinFlip.Results, 3, 4);
 
             Assert.AreEqual(0, simulation.Simulate(100).Average(r => r), 0.1);
             Assert.AreEqual(25, simulation.Simulate(25).Length);

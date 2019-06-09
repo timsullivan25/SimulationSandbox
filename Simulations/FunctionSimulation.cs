@@ -1,6 +1,7 @@
 ﻿using MathNet.Numerics.Distributions;
 using Simulations.Exceptions;
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace Simulations
     /// <typeparam name="T"></typeparam>
     public interface IFunctionSimulation<T>
     {
-        T[] Simulate(int numberOfSimulations, bool passthroughIParams = false);
+        T[] Simulate(int numberOfSimulations);
     }
 
     /// <summary>
@@ -42,7 +43,7 @@ namespace Simulations
         /// <param name="numberOfSimulations">Number of times to invoke function.</param>
         /// <param name="passthroughIParams">This has no affect for this version of the simulation, but is necessary to comply with the interface.</param>
         /// <returns>An array of objects with the same type as the output value of the function.</returns>
-        public T[] Simulate(int numberOfSimulations, bool passthroughIParams = false)
+        public T[] Simulate(int numberOfSimulations)
         {
             // run function specified number of times
             T[] results = new T[numberOfSimulations];
@@ -82,10 +83,10 @@ namespace Simulations
         /// <param name="passthroughIParams">FALSE if IParameters should be evaluated and converted to object arrays. TRUE if IParameters should be passed through as objects to the underlying function.</param>
         /// <returns>An array of objects with the same type as the output value of the function.</returns>
         /// <remarks>IParameters generally produce an output type of double or int. The simulation will attempt to convert the output values into the type of the function input parameter, but there is no guarantee the conversion will be successful in every situation.</remarks>
-        public T[] Simulate(int numberOfSimulations, bool passthroughIParams = false)
+        public T[] Simulate(int numberOfSimulations)
         {
             // generate input parameters
-            object[] p1 = ParameterParsing.GetParameterValues<T1>(Parameters[0], numberOfSimulations, passthroughIParams);
+            object[] p1 = ParameterParsing.GetParameterValues<T1>(Parameters[0], numberOfSimulations);
 
             // run function specified number of times
             T[] results = new T[numberOfSimulations];
@@ -126,11 +127,11 @@ namespace Simulations
         /// <param name="passthroughIParams">FALSE if IParameters should be evaluated and converted to object arrays. TRUE if IParameters should be passed through as objects to the underlying function.</param>
         /// <returns>An array of objects with the same type as the output value of the function.</returns>
         /// <remarks>IParameters generally produce an output type of double or int. The simulation will attempt to convert the output values into the type of the function input parameter, but there is no guarantee the conversion will be successful in every situation.</remarks>
-        public T[] Simulate(int numberOfSimulations, bool passthroughIParams = false)
+        public T[] Simulate(int numberOfSimulations)
         {
             // generate input parameters
-            object[] p1 = ParameterParsing.GetParameterValues<T1>(Parameters[0], numberOfSimulations, passthroughIParams);
-            object[] p2 = ParameterParsing.GetParameterValues<T2>(Parameters[1], numberOfSimulations, passthroughIParams);          
+            object[] p1 = ParameterParsing.GetParameterValues<T1>(Parameters[0], numberOfSimulations);
+            object[] p2 = ParameterParsing.GetParameterValues<T2>(Parameters[1], numberOfSimulations);          
 
             // run function specified number of times
             T[] results = new T[numberOfSimulations];
@@ -172,12 +173,12 @@ namespace Simulations
         /// <param name="passthroughIParams">FALSE if IParameters should be evaluated and converted to object arrays. TRUE if IParameters should be passed through as objects to the underlying function.</param>
         /// <returns>An array of objects with the same type as the output value of the function.</returns>
         /// <remarks>IParameters generally produce an output type of double or int. The simulation will attempt to convert the output values into the type of the function input parameter, but there is no guarantee the conversion will be successful in every situation.</remarks>
-        public T[] Simulate(int numberOfSimulations, bool passthroughIParams = false)
+        public T[] Simulate(int numberOfSimulations)
         {
             // generate input parameters
-            object[] p1 = ParameterParsing.GetParameterValues<T1>(Parameters[0], numberOfSimulations, passthroughIParams);
-            object[] p2 = ParameterParsing.GetParameterValues<T2>(Parameters[1], numberOfSimulations, passthroughIParams);
-            object[] p3 = ParameterParsing.GetParameterValues<T3>(Parameters[2], numberOfSimulations, passthroughIParams);
+            object[] p1 = ParameterParsing.GetParameterValues<T1>(Parameters[0], numberOfSimulations);
+            object[] p2 = ParameterParsing.GetParameterValues<T2>(Parameters[1], numberOfSimulations);
+            object[] p3 = ParameterParsing.GetParameterValues<T3>(Parameters[2], numberOfSimulations);
 
             // run function specified number of times
             T[] results = new T[numberOfSimulations];
@@ -220,13 +221,13 @@ namespace Simulations
         /// <param name="passthroughIParams">FALSE if IParameters should be evaluated and converted to object arrays. TRUE if IParameters should be passed through as objects to the underlying function.</param>
         /// <returns>An array of objects with the same type as the output value of the function.</returns>
         /// <remarks>IParameters generally produce an output type of double or int. The simulation will attempt to convert the output values into the type of the function input parameter, but there is no guarantee the conversion will be successful in every situation.</remarks>
-        public T[] Simulate(int numberOfSimulations, bool passthroughIParams = false)
+        public T[] Simulate(int numberOfSimulations)
         {
             // generate input parameters
-            object[] p1 = ParameterParsing.GetParameterValues<T1>(Parameters[0], numberOfSimulations, passthroughIParams);
-            object[] p2 = ParameterParsing.GetParameterValues<T2>(Parameters[1], numberOfSimulations, passthroughIParams);
-            object[] p3 = ParameterParsing.GetParameterValues<T3>(Parameters[2], numberOfSimulations, passthroughIParams);
-            object[] p4 = ParameterParsing.GetParameterValues<T4>(Parameters[3], numberOfSimulations, passthroughIParams);
+            object[] p1 = ParameterParsing.GetParameterValues<T1>(Parameters[0], numberOfSimulations);
+            object[] p2 = ParameterParsing.GetParameterValues<T2>(Parameters[1], numberOfSimulations);
+            object[] p3 = ParameterParsing.GetParameterValues<T3>(Parameters[2], numberOfSimulations);
+            object[] p4 = ParameterParsing.GetParameterValues<T4>(Parameters[3], numberOfSimulations);
 
             // run function specified number of times
             T[] results = new T[numberOfSimulations];
@@ -251,9 +252,13 @@ namespace Simulations
         /// <param name="numberOfSimulations">The number of values to generate.</param>
         /// <param name="passthroughIParams">Indicates whether IParameters should be converted into arrays of values or passed through as objects to the function.</param>
         /// <returns></returns>
-        public static object[] GetParameterValues<T>(object parameter, int numberOfSimulations, bool passthroughIParams = false)
+        public static object[] GetParameterValues<T>(object parameter, int numberOfSimulations)
         {
-            if (parameter is IParameter iParameter && passthroughIParams == false)
+            if (parameter is T)
+            {
+                return Repeat(parameter, numberOfSimulations);
+            }
+            else if (parameter is IParameter iParameter)
             {
                 #region Conditional Parameter
 
@@ -329,7 +334,7 @@ namespace Simulations
                             conditionalResults[s] = (iParameter as ConditionalParameter).DefaultValue;
                     }
 
-                    return UntypeArray(conditionalResults);
+                    return ConvertAndPackArray(conditionalResults, typeof(T));
                 }
 
                 #endregion
@@ -344,7 +349,7 @@ namespace Simulations
                     for (int i = 0; i < numberOfSimulations; i++)
                         repeatValues[i] = constant;
 
-                    return UntypeArray(repeatValues);
+                    return ConvertAndPackArray(repeatValues, typeof(T));
                 }
 
                 #endregion
@@ -362,7 +367,7 @@ namespace Simulations
                         // i.e. we can't change one of them without having to change everything after it...
                         DependentSimulation innerSimulation = (iParameter as DependentSimulationParameter).DependentSimulation;
                         DependentSimulationResults innerResults = innerSimulation.Simulate(numberOfSimulations);
-                        return UntypeArray(innerResults.Results);
+                        return ConvertAndPackArray(innerResults.Results, typeof(T));
                     }
                     else
                     {
@@ -484,7 +489,7 @@ namespace Simulations
                         #endregion
 
                         // assign summary results to output
-                        return UntypeArray(summaryStatistics);
+                        return ConvertAndPackArray(summaryStatistics, typeof(T));
                     }
                 }
 
@@ -513,7 +518,7 @@ namespace Simulations
                         }
                     }
 
-                    return UntypeArray(correspondingValues);
+                    return ConvertAndPackArray(correspondingValues, typeof(T));
                 }
 
                 #endregion
@@ -608,7 +613,7 @@ namespace Simulations
 
                         #endregion
 
-                        return UntypeArray(samples);
+                        return ConvertAndPackArray(samples, typeof(T));
                     }
                     else
                     {
@@ -694,7 +699,7 @@ namespace Simulations
 
                         #endregion
 
-                        return UntypeArray(samples);
+                        return ConvertAndPackArray(samples, typeof(T));
                     }
                 }
 
@@ -741,7 +746,7 @@ namespace Simulations
                                 break;
                         }
 
-                        return UntypeArray(computeValues);
+                        return ConvertAndPackArray(computeValues, typeof(T));
                     }
                     catch (Exception innerException)
                     {
@@ -758,7 +763,7 @@ namespace Simulations
                     if (param.PrecomputedValues.Length != numberOfSimulations)
                             throw new PrecomputedValueCountException($"{param.Name} has {param.PrecomputedValues.Length} precomputed values but the simulation being run expects {numberOfSimulations} values.");
 
-                    return UntypeArray(param.PrecomputedValues);
+                    return ConvertAndPackArray(param.PrecomputedValues, typeof(T));
                 }
 
                 #endregion
@@ -788,7 +793,7 @@ namespace Simulations
                         }
                     }
 
-                    return UntypeArray(interpretedResults);
+                    return ConvertAndPackArray(interpretedResults, typeof(T));
                 }
 
                 #endregion
@@ -851,7 +856,7 @@ namespace Simulations
                         throw new RandomBagReplacementRuleException($"{randomBag.ReplacementRule} is not a valid replacement rule.");
                     }
 
-                    return UntypeArray(selections);
+                    return ConvertAndPackArray(selections, typeof(T));
                 }
 
                 #endregion
@@ -949,7 +954,7 @@ namespace Simulations
 
                         #endregion
 
-                        return UntypeArray(samples);
+                        return ConvertAndPackArray(samples, typeof(T));
                     }
                     else
                     {
@@ -1070,7 +1075,7 @@ namespace Simulations
                         #endregion
 
                         // assign summary results to output
-                        return UntypeArray(summaryStatistics);
+                        return ConvertAndPackArray(summaryStatistics, typeof(T));
                     }
                 }
 
@@ -1085,7 +1090,7 @@ namespace Simulations
 
                 #endregion
             }
-            else if (parameter is IQualitativeParameter iQualitativeParameter && passthroughIParams == false)
+            else if (parameter is IQualitativeParameter iQualitativeParameter)
             {
                 string[] qualitativeResults = new string[numberOfSimulations];
 
@@ -1262,7 +1267,7 @@ namespace Simulations
 
                 #endregion
 
-                return UntypeArray(qualitativeResults);
+                return ConvertAndPackArray(qualitativeResults, typeof(T));
             }
             else if (parameter is IDiscreteDistribution discreteDistribution)
             {
@@ -1270,7 +1275,7 @@ namespace Simulations
                 int[] samples = new int[numberOfSimulations];
                 discreteDistribution.Samples(samples);
 
-                return UntypeArray(samples);
+                return ConvertAndPackArray(samples, typeof(T));
             }
             else if (parameter is IContinuousDistribution continuousDistribution)
             {
@@ -1278,19 +1283,28 @@ namespace Simulations
                 double[] samples = new double[numberOfSimulations];
                 continuousDistribution.Samples(samples);
 
-                return UntypeArray(samples);
-            }
-            else if (parameter is ListOfInputs inputs)
+                return ConvertAndPackArray(samples, typeof(T));
+            }            
+            else if (parameter is ICollection inputs)
             {
-                return inputs.Inputs.ToArray();
+                // assume collection is meant to be a list if the function parameter is not also a collection
+                // could be issues if collection of inputs is shorter than number of simulations requested
+                object[] inputList = new object[inputs.Count];
+                inputs.CopyTo(inputList, 0);
+                return inputList;
             }
             else if (parameter is IFunctionSimulation<T> functionSimulation)
             {
-                return UntypeArray(functionSimulation.Simulate(numberOfSimulations));
+                return ConvertAndPackArray(functionSimulation.Simulate(numberOfSimulations), typeof(T));
             }
             else 
             {
-                return Repeat(parameter, numberOfSimulations);
+                // not sure it's a good thing if we end up here
+                // it would mean they passed a type not consistent with input parameter type
+                // and also not a special type that can be parsed
+
+                //return Repeat(parameter, numberOfSimulations);
+                throw new Exception($"Parameter of type {parameter.GetType()} is not consistent with the type of input expected by the function and is not a special type that can be parsed.");
             }
         }
 
@@ -1311,36 +1325,19 @@ namespace Simulations
         }
 
         /// <summary>
-        /// Converts an array of any type into an array of objects.
+        /// Takes an array of any type, converts the objects to the type of the function parameter, then returns a generic array of objects. 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="arr"></param>
         /// <returns></returns>
-        private static object[] UntypeArray<T>(T[] arr)
+        private static object[] ConvertAndPackArray<T>(T[] arr, Type parameterType)
         {
             int length = arr.Length;
             object[] values = new object[length];
             for (int i = 0; i < length; i++)
-                values[i] = arr[i];
+                values[i] = arr[i] is T ? arr[i] : Convert.ChangeType(arr[i], parameterType);
 
             return values;
         }
     }  
-
-    /// <summary>
-    /// Use this when passing a collection of objects to be used as inputs for each simulation instead of a collection that should be used as an input for every simulation.
-    /// </summary>
-    public class ListOfInputs
-    {
-        public ICollection<object> Inputs;
-
-        /// <summary>
-        /// Marks a collection of objects as individual inputs to use for each simulation instead of a collection that should be used as an input for every simulation.
-        /// </summary>
-        /// <param name="inputs"></param>
-        public ListOfInputs(ICollection<object> inputs)
-        {
-            Inputs = inputs;
-        }
-    }
 }
