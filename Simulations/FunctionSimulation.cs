@@ -1085,6 +1085,22 @@ namespace Simulations
 
                 #endregion
             }
+            else if (parameter is IDiscreteDistribution discreteDistribution)
+            {
+                // must use integers for discrete distributions
+                int[] samples = new int[numberOfSimulations];
+                discreteDistribution.Samples(samples);
+
+                return UntypeArray(samples);
+            }
+            else if (parameter is IContinuousDistribution continuousDistribution)
+            {
+                // use doubles for continuous distribution
+                double[] samples = new double[numberOfSimulations];
+                continuousDistribution.Samples(samples);
+
+                return UntypeArray(samples);
+            }
             else if (parameter is ListOfInputs inputs)
             {
                 return inputs.Inputs.ToArray();

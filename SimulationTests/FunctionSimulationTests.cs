@@ -52,6 +52,13 @@ namespace SimulationTests
 
             double[] results = simulationPassthrough.Simulate(1000);
             Assert.AreEqual(1, results.Average(r => r), 0.1);
+
+            // test direct distribution parameter
+            FunctionSimulation<double, double> simulationDirectDistribution =
+                new FunctionSimulation<double, double>(Mirror, new Triangular(10, 20, 15));
+
+            double[] results2 = simulationDirectDistribution.Simulate(1000);
+            Assert.AreEqual(15, results2.Average(r => r), 0.25);
         }
 
         private double Mirror(double simulationAverage)
