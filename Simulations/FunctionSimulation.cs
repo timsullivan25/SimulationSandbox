@@ -53,7 +53,6 @@ namespace Simulations
             return results;
         }
     }
-
     /// <summary>
     /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
     /// </summary>
@@ -95,7 +94,6 @@ namespace Simulations
             return results;
         }
     }
-
     /// <summary>
     /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
     /// </summary>
@@ -142,7 +140,6 @@ namespace Simulations
             return results;
         }
     }
-
     /// <summary>
     /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
     /// </summary>
@@ -194,7 +191,6 @@ namespace Simulations
             return results;
         }
     }
-
     /// <summary>
     /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
     /// </summary>
@@ -247,6 +243,447 @@ namespace Simulations
 
             for (int i = 0; i < numberOfSimulations; i++)
                 results[i] = (T)Function.DynamicInvoke(p1[i], p2[i], p3[i], p4[i]);
+
+            return results;
+        }
+    }
+    /// <summary>
+    /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
+    /// </summary>
+    /// <typeparam name="T1">Type of first input parameter.</typeparam>
+    /// <typeparam name="T2">Type of second input parameter.</typeparam>
+    /// <typeparam name="T3">Type of third input parameter.</typeparam>
+    /// <typeparam name="T4">Type of fourth input parameter.</typeparam>
+    /// <typeparam name="T5">Type of fifth input parameter.</typeparam>
+    /// <typeparam name="T">Output type of underlying function.</typeparam>
+    public class FunctionSimulation<T1, T2, T3, T4, T5, T> : IFunctionSimulation<T>
+    {
+        public Func<T1, T2, T3, T4, T5, T> Function { get; set; }
+        public object Param1 { get; private set; }
+        public object Param2 { get; private set; }
+        public object Param3 { get; private set; }
+        public object Param4 { get; private set; }
+        public object Param5 { get; private set; }
+
+        /// <summary>
+        /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
+        /// </summary>
+        /// <param name="function">Function over which to iterate.</param>
+        /// <param name="param1">The first parameter in the function.</param>
+        /// <param name="param2">The second parameter in the function.</param>
+        /// <param name="param3">The third parameter in the function.</param>
+        /// <param name="param4">The fourth parameter in the function.</param>
+        /// <param name="param5">The fifth parameter in the function.</param>
+        public FunctionSimulation(Func<T1, T2, T3, T4, T5, T> function, object param1, object param2, object param3, object param4, object param5)
+        {
+            Function = function;
+            Param1 = param1;
+            Param2 = param2;
+            Param3 = param3;
+            Param4 = param4;
+            Param5 = param5;
+        }
+
+        /// <summary>
+        /// Iterates over the function n number of times using the provided parameters as input.
+        /// </summary>
+        /// <param name="numberOfSimulations">Number of times to invoke function.</param>
+        /// <returns>An array of objects with the same type as the output value of the function.</returns>
+        /// <remarks>IParameters generally produce an output type of double or int. The simulation will attempt to convert the output values into the type of the function input parameter, but there is no guarantee the conversion will be successful in every situation.</remarks>
+        public T[] Simulate(int numberOfSimulations)
+        {
+            // generate input parameters
+            object[] p1 = ParameterParsing.GetParameterValues<T1>(Param1, numberOfSimulations);
+            object[] p2 = ParameterParsing.GetParameterValues<T2>(Param2, numberOfSimulations);
+            object[] p3 = ParameterParsing.GetParameterValues<T3>(Param3, numberOfSimulations);
+            object[] p4 = ParameterParsing.GetParameterValues<T4>(Param4, numberOfSimulations);
+            object[] p5 = ParameterParsing.GetParameterValues<T5>(Param5, numberOfSimulations);
+
+            // run function specified number of times
+            T[] results = new T[numberOfSimulations];
+
+            for (int i = 0; i < numberOfSimulations; i++)
+                results[i] = (T)Function.DynamicInvoke(p1[i], p2[i], p3[i], p4[i], p5[i]);
+
+            return results;
+        }
+    }
+    /// <summary>
+    /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
+    /// </summary>
+    /// <typeparam name="T1">Type of first input parameter.</typeparam>
+    /// <typeparam name="T2">Type of second input parameter.</typeparam>
+    /// <typeparam name="T3">Type of third input parameter.</typeparam>
+    /// <typeparam name="T4">Type of fourth input parameter.</typeparam>
+    /// <typeparam name="T5">Type of fifth input parameter.</typeparam>
+    /// <typeparam name="T6">Type of sixth input parameter.</typeparam>
+    /// <typeparam name="T">Output type of underlying function.</typeparam>
+    public class FunctionSimulation<T1, T2, T3, T4, T5, T6, T> : IFunctionSimulation<T>
+    {
+        public Func<T1, T2, T3, T4, T5, T6, T> Function { get; set; }
+        public object Param1 { get; private set; }
+        public object Param2 { get; private set; }
+        public object Param3 { get; private set; }
+        public object Param4 { get; private set; }
+        public object Param5 { get; private set; }
+        public object Param6 { get; private set; }
+
+        /// <summary>
+        /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
+        /// </summary>
+        /// <param name="function">Function over which to iterate.</param>
+        /// <param name="param1">The first parameter in the function.</param>
+        /// <param name="param2">The second parameter in the function.</param>
+        /// <param name="param3">The third parameter in the function.</param>
+        /// <param name="param4">The fourth parameter in the function.</param>
+        /// <param name="param5">The fifth parameter in the function.</param>
+        /// <param name="param6">The sixth parameter in the function.</param>
+        public FunctionSimulation(Func<T1, T2, T3, T4, T5, T6, T> function, object param1, object param2, object param3, object param4, object param5, object param6)
+        {
+            Function = function;
+            Param1 = param1;
+            Param2 = param2;
+            Param3 = param3;
+            Param4 = param4;
+            Param5 = param5;
+            Param6 = param6;
+        }
+
+        /// <summary>
+        /// Iterates over the function n number of times using the provided parameters as input.
+        /// </summary>
+        /// <param name="numberOfSimulations">Number of times to invoke function.</param>
+        /// <returns>An array of objects with the same type as the output value of the function.</returns>
+        /// <remarks>IParameters generally produce an output type of double or int. The simulation will attempt to convert the output values into the type of the function input parameter, but there is no guarantee the conversion will be successful in every situation.</remarks>
+        public T[] Simulate(int numberOfSimulations)
+        {
+            // generate input parameters
+            object[] p1 = ParameterParsing.GetParameterValues<T1>(Param1, numberOfSimulations);
+            object[] p2 = ParameterParsing.GetParameterValues<T2>(Param2, numberOfSimulations);
+            object[] p3 = ParameterParsing.GetParameterValues<T3>(Param3, numberOfSimulations);
+            object[] p4 = ParameterParsing.GetParameterValues<T4>(Param4, numberOfSimulations);
+            object[] p5 = ParameterParsing.GetParameterValues<T5>(Param5, numberOfSimulations);
+            object[] p6 = ParameterParsing.GetParameterValues<T6>(Param6, numberOfSimulations);
+
+            // run function specified number of times
+            T[] results = new T[numberOfSimulations];
+
+            for (int i = 0; i < numberOfSimulations; i++)
+                results[i] = (T)Function.DynamicInvoke(p1[i], p2[i], p3[i], p4[i], p5[i], p6[i]);
+
+            return results;
+        }
+    }
+    /// <summary>
+    /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
+    /// </summary>
+    /// <typeparam name="T1">Type of first input parameter.</typeparam>
+    /// <typeparam name="T2">Type of second input parameter.</typeparam>
+    /// <typeparam name="T3">Type of third input parameter.</typeparam>
+    /// <typeparam name="T4">Type of fourth input parameter.</typeparam>
+    /// <typeparam name="T5">Type of fifth input parameter.</typeparam>
+    /// <typeparam name="T6">Type of sixth input parameter.</typeparam>
+    /// <typeparam name="T6">Type of seventh input parameter.</typeparam>
+    /// <typeparam name="T">Output type of underlying function.</typeparam>
+    public class FunctionSimulation<T1, T2, T3, T4, T5, T6, T7, T> : IFunctionSimulation<T>
+    {
+        public Func<T1, T2, T3, T4, T5, T6, T7, T> Function { get; set; }
+        public object Param1 { get; private set; }
+        public object Param2 { get; private set; }
+        public object Param3 { get; private set; }
+        public object Param4 { get; private set; }
+        public object Param5 { get; private set; }
+        public object Param6 { get; private set; }
+        public object Param7 { get; private set; }
+
+        /// <summary>
+        /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
+        /// </summary>
+        /// <param name="function">Function over which to iterate.</param>
+        /// <param name="param1">The first parameter in the function.</param>
+        /// <param name="param2">The second parameter in the function.</param>
+        /// <param name="param3">The third parameter in the function.</param>
+        /// <param name="param4">The fourth parameter in the function.</param>
+        /// <param name="param5">The fifth parameter in the function.</param>
+        /// <param name="param6">The sixth parameter in the function.</param>
+        /// <param name="param7">The seventh parameter in the function.</param>
+        public FunctionSimulation(Func<T1, T2, T3, T4, T5, T6, T7, T> function, object param1, object param2, object param3, object param4, object param5, object param6, object param7)
+        {
+            Function = function;
+            Param1 = param1;
+            Param2 = param2;
+            Param3 = param3;
+            Param4 = param4;
+            Param5 = param5;
+            Param6 = param6;
+            Param7 = param7;
+        }
+
+        /// <summary>
+        /// Iterates over the function n number of times using the provided parameters as input.
+        /// </summary>
+        /// <param name="numberOfSimulations">Number of times to invoke function.</param>
+        /// <returns>An array of objects with the same type as the output value of the function.</returns>
+        /// <remarks>IParameters generally produce an output type of double or int. The simulation will attempt to convert the output values into the type of the function input parameter, but there is no guarantee the conversion will be successful in every situation.</remarks>
+        public T[] Simulate(int numberOfSimulations)
+        {
+            // generate input parameters
+            object[] p1 = ParameterParsing.GetParameterValues<T1>(Param1, numberOfSimulations);
+            object[] p2 = ParameterParsing.GetParameterValues<T2>(Param2, numberOfSimulations);
+            object[] p3 = ParameterParsing.GetParameterValues<T3>(Param3, numberOfSimulations);
+            object[] p4 = ParameterParsing.GetParameterValues<T4>(Param4, numberOfSimulations);
+            object[] p5 = ParameterParsing.GetParameterValues<T5>(Param5, numberOfSimulations);
+            object[] p6 = ParameterParsing.GetParameterValues<T6>(Param6, numberOfSimulations);
+            object[] p7 = ParameterParsing.GetParameterValues<T7>(Param7, numberOfSimulations);
+
+            // run function specified number of times
+            T[] results = new T[numberOfSimulations];
+
+            for (int i = 0; i < numberOfSimulations; i++)
+                results[i] = (T)Function.DynamicInvoke(p1[i], p2[i], p3[i], p4[i], p5[i], p6[i], p7[i]);
+
+            return results;
+        }
+    }
+    /// <summary>
+    /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
+    /// </summary>
+    /// <typeparam name="T1">Type of first input parameter.</typeparam>
+    /// <typeparam name="T2">Type of second input parameter.</typeparam>
+    /// <typeparam name="T3">Type of third input parameter.</typeparam>
+    /// <typeparam name="T4">Type of fourth input parameter.</typeparam>
+    /// <typeparam name="T5">Type of fifth input parameter.</typeparam>
+    /// <typeparam name="T6">Type of sixth input parameter.</typeparam>
+    /// <typeparam name="T7">Type of seventh input parameter.</typeparam>
+    /// <typeparam name="T8">Type of eigth input parameter.</typeparam>
+    /// <typeparam name="T">Output type of underlying function.</typeparam>
+    public class FunctionSimulation<T1, T2, T3, T4, T5, T6, T7, T8, T> : IFunctionSimulation<T>
+    {
+        public Func<T1, T2, T3, T4, T5, T6, T7, T8, T> Function { get; set; }
+        public object Param1 { get; private set; }
+        public object Param2 { get; private set; }
+        public object Param3 { get; private set; }
+        public object Param4 { get; private set; }
+        public object Param5 { get; private set; }
+        public object Param6 { get; private set; }
+        public object Param7 { get; private set; }
+        public object Param8 { get; private set; }
+
+        /// <summary>
+        /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
+        /// </summary>
+        /// <param name="function">Function over which to iterate.</param>
+        /// <param name="param1">The first parameter in the function.</param>
+        /// <param name="param2">The second parameter in the function.</param>
+        /// <param name="param3">The third parameter in the function.</param>
+        /// <param name="param4">The fourth parameter in the function.</param>
+        /// <param name="param5">The fifth parameter in the function.</param>
+        /// <param name="param6">The sixth parameter in the function.</param>
+        /// <param name="param7">The seventh parameter in the function.</param>
+        /// <param name="param8">The eigth parameter in the function.</param>
+        public FunctionSimulation(Func<T1, T2, T3, T4, T5, T6, T7, T8, T> function, object param1, object param2, object param3, object param4, object param5, object param6, object param7, object param8)
+        {
+            Function = function;
+            Param1 = param1;
+            Param2 = param2;
+            Param3 = param3;
+            Param4 = param4;
+            Param5 = param5;
+            Param6 = param6;
+            Param7 = param7;
+            Param8 = param8;
+        }
+
+        /// <summary>
+        /// Iterates over the function n number of times using the provided parameters as input.
+        /// </summary>
+        /// <param name="numberOfSimulations">Number of times to invoke function.</param>
+        /// <returns>An array of objects with the same type as the output value of the function.</returns>
+        /// <remarks>IParameters generally produce an output type of double or int. The simulation will attempt to convert the output values into the type of the function input parameter, but there is no guarantee the conversion will be successful in every situation.</remarks>
+        public T[] Simulate(int numberOfSimulations)
+        {
+            // generate input parameters
+            object[] p1 = ParameterParsing.GetParameterValues<T1>(Param1, numberOfSimulations);
+            object[] p2 = ParameterParsing.GetParameterValues<T2>(Param2, numberOfSimulations);
+            object[] p3 = ParameterParsing.GetParameterValues<T3>(Param3, numberOfSimulations);
+            object[] p4 = ParameterParsing.GetParameterValues<T4>(Param4, numberOfSimulations);
+            object[] p5 = ParameterParsing.GetParameterValues<T5>(Param5, numberOfSimulations);
+            object[] p6 = ParameterParsing.GetParameterValues<T6>(Param6, numberOfSimulations);
+            object[] p7 = ParameterParsing.GetParameterValues<T7>(Param7, numberOfSimulations);
+            object[] p8 = ParameterParsing.GetParameterValues<T8>(Param8, numberOfSimulations);
+
+            // run function specified number of times
+            T[] results = new T[numberOfSimulations];
+
+            for (int i = 0; i < numberOfSimulations; i++)
+                results[i] = (T)Function.DynamicInvoke(p1[i], p2[i], p3[i], p4[i], p5[i], p6[i], p7[i], p8[i]);
+
+            return results;
+        }
+    }
+    /// <summary>
+    /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
+    /// </summary>
+    /// <typeparam name="T1">Type of first input parameter.</typeparam>
+    /// <typeparam name="T2">Type of second input parameter.</typeparam>
+    /// <typeparam name="T3">Type of third input parameter.</typeparam>
+    /// <typeparam name="T4">Type of fourth input parameter.</typeparam>
+    /// <typeparam name="T5">Type of fifth input parameter.</typeparam>
+    /// <typeparam name="T6">Type of sixth input parameter.</typeparam>
+    /// <typeparam name="T7">Type of seventh input parameter.</typeparam>
+    /// <typeparam name="T8">Type of eigth input parameter.</typeparam>
+    /// <typeparam name="T9">Type of ninth input parameter.</typeparam>
+    /// <typeparam name="T">Output type of underlying function.</typeparam>
+    public class FunctionSimulation<T1, T2, T3, T4, T5, T6, T7, T8, T9, T> : IFunctionSimulation<T>
+    {
+        public Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T> Function { get; set; }
+        public object Param1 { get; private set; }
+        public object Param2 { get; private set; }
+        public object Param3 { get; private set; }
+        public object Param4 { get; private set; }
+        public object Param5 { get; private set; }
+        public object Param6 { get; private set; }
+        public object Param7 { get; private set; }
+        public object Param8 { get; private set; }
+        public object Param9 { get; private set; }
+
+        /// <summary>
+        /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
+        /// </summary>
+        /// <param name="function">Function over which to iterate.</param>
+        /// <param name="param1">The first parameter in the function.</param>
+        /// <param name="param2">The second parameter in the function.</param>
+        /// <param name="param3">The third parameter in the function.</param>
+        /// <param name="param4">The fourth parameter in the function.</param>
+        /// <param name="param5">The fifth parameter in the function.</param>
+        /// <param name="param6">The sixth parameter in the function.</param>
+        /// <param name="param7">The seventh parameter in the function.</param>
+        /// <param name="param8">The eigth parameter in the function.</param>
+        /// <param name="param9">The ninth parameter in the function.</param>
+        public FunctionSimulation(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T> function, object param1, object param2, object param3, object param4, object param5, object param6, object param7, object param8, object param9)
+        {
+            Function = function;
+            Param1 = param1;
+            Param2 = param2;
+            Param3 = param3;
+            Param4 = param4;
+            Param5 = param5;
+            Param6 = param6;
+            Param7 = param7;
+            Param8 = param8;
+            Param9 = param9;
+        }
+
+        /// <summary>
+        /// Iterates over the function n number of times using the provided parameters as input.
+        /// </summary>
+        /// <param name="numberOfSimulations">Number of times to invoke function.</param>
+        /// <returns>An array of objects with the same type as the output value of the function.</returns>
+        /// <remarks>IParameters generally produce an output type of double or int. The simulation will attempt to convert the output values into the type of the function input parameter, but there is no guarantee the conversion will be successful in every situation.</remarks>
+        public T[] Simulate(int numberOfSimulations)
+        {
+            // generate input parameters
+            object[] p1 = ParameterParsing.GetParameterValues<T1>(Param1, numberOfSimulations);
+            object[] p2 = ParameterParsing.GetParameterValues<T2>(Param2, numberOfSimulations);
+            object[] p3 = ParameterParsing.GetParameterValues<T3>(Param3, numberOfSimulations);
+            object[] p4 = ParameterParsing.GetParameterValues<T4>(Param4, numberOfSimulations);
+            object[] p5 = ParameterParsing.GetParameterValues<T5>(Param5, numberOfSimulations);
+            object[] p6 = ParameterParsing.GetParameterValues<T6>(Param6, numberOfSimulations);
+            object[] p7 = ParameterParsing.GetParameterValues<T7>(Param7, numberOfSimulations);
+            object[] p8 = ParameterParsing.GetParameterValues<T8>(Param8, numberOfSimulations);
+            object[] p9 = ParameterParsing.GetParameterValues<T9>(Param9, numberOfSimulations);
+
+            // run function specified number of times
+            T[] results = new T[numberOfSimulations];
+
+            for (int i = 0; i < numberOfSimulations; i++)
+                results[i] = (T)Function.DynamicInvoke(p1[i], p2[i], p3[i], p4[i], p5[i], p6[i], p7[i], p8[i], p9[i]);
+
+            return results;
+        }
+    }
+    /// <summary>
+    /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
+    /// </summary>
+    /// <typeparam name="T1">Type of first input parameter.</typeparam>
+    /// <typeparam name="T2">Type of second input parameter.</typeparam>
+    /// <typeparam name="T3">Type of third input parameter.</typeparam>
+    /// <typeparam name="T4">Type of fourth input parameter.</typeparam>
+    /// <typeparam name="T5">Type of fifth input parameter.</typeparam>
+    /// <typeparam name="T6">Type of sixth input parameter.</typeparam>
+    /// <typeparam name="T7">Type of seventh input parameter.</typeparam>
+    /// <typeparam name="T8">Type of eigth input parameter.</typeparam>
+    /// <typeparam name="T9">Type of ninth input parameter.</typeparam>
+    /// <typeparam name="T10">Type of tenth input parameter.</typeparam>
+    /// <typeparam name="T">Output type of underlying function.</typeparam>
+    public class FunctionSimulation<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T> : IFunctionSimulation<T>
+    {
+        public Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T> Function { get; set; }
+        public object Param1 { get; private set; }
+        public object Param2 { get; private set; }
+        public object Param3 { get; private set; }
+        public object Param4 { get; private set; }
+        public object Param5 { get; private set; }
+        public object Param6 { get; private set; }
+        public object Param7 { get; private set; }
+        public object Param8 { get; private set; }
+        public object Param9 { get; private set; }
+        public object Param10 { get; private set; }
+
+        /// <summary>
+        /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
+        /// </summary>
+        /// <param name="function">Function over which to iterate.</param>
+        /// <param name="param1">The first parameter in the function.</param>
+        /// <param name="param2">The second parameter in the function.</param>
+        /// <param name="param3">The third parameter in the function.</param>
+        /// <param name="param4">The fourth parameter in the function.</param>
+        /// <param name="param5">The fifth parameter in the function.</param>
+        /// <param name="param6">The sixth parameter in the function.</param>
+        /// <param name="param7">The seventh parameter in the function.</param>
+        /// <param name="param8">The eigth parameter in the function.</param>
+        /// <param name="param9">The ninth parameter in the function.</param>
+        /// <param name="param10">The tenth parameter in the function.</param>
+        public FunctionSimulation(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T> function, object param1, object param2, object param3, object param4, object param5, object param6, object param7, object param8, object param9, object param10)
+        {
+            Function = function;
+            Param1 = param1;
+            Param2 = param2;
+            Param3 = param3;
+            Param4 = param4;
+            Param5 = param5;
+            Param6 = param6;
+            Param7 = param7;
+            Param8 = param8;
+            Param9 = param9;
+            Param10 = param10;
+        }
+
+        /// <summary>
+        /// Iterates over the function n number of times using the provided parameters as input.
+        /// </summary>
+        /// <param name="numberOfSimulations">Number of times to invoke function.</param>
+        /// <returns>An array of objects with the same type as the output value of the function.</returns>
+        /// <remarks>IParameters generally produce an output type of double or int. The simulation will attempt to convert the output values into the type of the function input parameter, but there is no guarantee the conversion will be successful in every situation.</remarks>
+        public T[] Simulate(int numberOfSimulations)
+        {
+            // generate input parameters
+            object[] p1 = ParameterParsing.GetParameterValues<T1>(Param1, numberOfSimulations);
+            object[] p2 = ParameterParsing.GetParameterValues<T2>(Param2, numberOfSimulations);
+            object[] p3 = ParameterParsing.GetParameterValues<T3>(Param3, numberOfSimulations);
+            object[] p4 = ParameterParsing.GetParameterValues<T4>(Param4, numberOfSimulations);
+            object[] p5 = ParameterParsing.GetParameterValues<T5>(Param5, numberOfSimulations);
+            object[] p6 = ParameterParsing.GetParameterValues<T6>(Param6, numberOfSimulations);
+            object[] p7 = ParameterParsing.GetParameterValues<T7>(Param7, numberOfSimulations);
+            object[] p8 = ParameterParsing.GetParameterValues<T8>(Param8, numberOfSimulations);
+            object[] p9 = ParameterParsing.GetParameterValues<T9>(Param9, numberOfSimulations);
+            object[] p10 = ParameterParsing.GetParameterValues<T10>(Param10, numberOfSimulations);
+
+            // run function specified number of times
+            T[] results = new T[numberOfSimulations];
+
+            for (int i = 0; i < numberOfSimulations; i++)
+                results[i] = (T)Function.DynamicInvoke(p1[i], p2[i], p3[i], p4[i], p5[i], p6[i], p7[i], p8[i], p9[i], p10[i]);
 
             return results;
         }

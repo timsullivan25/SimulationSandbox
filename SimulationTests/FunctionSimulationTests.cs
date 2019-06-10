@@ -112,7 +112,7 @@ namespace SimulationTests
             FunctionSimulation<string, int, int, int> simulation = 
                 new FunctionSimulation<string, int, int, int>(CoinFlip, coinFlip.Results, 3, 4);
 
-            Assert.AreEqual(0, simulation.Simulate(100).Average(r => r), 0.1);
+            Assert.AreEqual(0, simulation.Simulate(1000).Average(r => r), 0.1);
             Assert.AreEqual(25, simulation.Simulate(25).Length);
         }
 
@@ -144,6 +144,106 @@ namespace SimulationTests
         private double CAPM(double rf, double B, double rm, int e)
         {
             return rf + B * (rm - rf) + e;
+        }
+
+        #endregion
+
+        #region T5
+
+        [TestMethod]
+        public void T5()
+        {
+            FunctionSimulation<int, int, int, int, int, int> simulation = new FunctionSimulation<int,int,int,int,int,int>(TestT5, 1, 2, 3, 4, 5);
+            Assert.AreEqual(15, simulation.Simulate(1)[0]);
+        }
+
+        private int TestT5(int p1, int p2, int p3, int p4, int p5)
+        {
+            return p1 + p2 + p3 + p4 + p5;
+        }
+
+        #endregion
+
+        #region T6
+
+        [TestMethod]
+        public void T6()
+        {
+            FunctionSimulation<int, int, int, int, int, int, int> simulation = new FunctionSimulation<int, int, int, int, int, int, int>(TestT6, 1, 2, 3, 4, 5, 6);
+            Assert.AreEqual(21, simulation.Simulate(1)[0]);
+        }
+
+        private int TestT6(int p1, int p2, int p3, int p4, int p5, int p6)
+        {
+            return p1 + p2 + p3 + p4 + p5 + p6;
+        }
+
+        #endregion
+
+        #region T7
+
+        [TestMethod]
+        public void T7()
+        {
+            FunctionSimulation<int, int, int, int, int, int, int, int> simulation = 
+                new FunctionSimulation<int, int, int, int, int, int, int, int>(TestT7, 1, 2, 3, 4, 5, 6, 7);
+            Assert.AreEqual(28, simulation.Simulate(1)[0]);
+        }
+
+        private int TestT7(int p1, int p2, int p3, int p4, int p5, int p6, int p7)
+        {
+            return p1 + p2 + p3 + p4 + p5 + p6 + p7;
+        }
+
+        #endregion
+
+        #region T8
+
+        [TestMethod]
+        public void T8()
+        {
+            FunctionSimulation<int, int, int, int, int, int, int, int, int> simulation =
+                new FunctionSimulation<int, int, int, int, int, int, int, int, int>(TestT8, 1, 2, 3, 4, 5, 6, 7, 8);
+            Assert.AreEqual(36, simulation.Simulate(1)[0]);
+        }
+
+        private int TestT8(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8)
+        {
+            return p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8;
+        }
+
+        #endregion
+
+        #region T9
+
+        [TestMethod]
+        public void T9()
+        {
+            FunctionSimulation<int, int, int, int, int, int, int, int, int, int> simulation =
+                new FunctionSimulation<int, int, int, int, int, int, int, int, int, int>(TestT9, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+            Assert.AreEqual(45, simulation.Simulate(1)[0]);
+        }
+
+        private int TestT9(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9)
+        {
+            return p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9;
+        }
+
+        #endregion
+
+        #region T10
+
+        [TestMethod]
+        public void T10()
+        {
+            FunctionSimulation<int, int, int, int, int, int, int, int, int, int, int> simulation =
+                new FunctionSimulation<int, int, int, int, int, int, int, int, int, int, int>(TestT10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+            Assert.AreEqual(55, simulation.Simulate(1)[0]);
+        }
+
+        private int TestT10(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9, int p10)
+        {
+            return p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9 + p10;
         }
 
         #endregion
