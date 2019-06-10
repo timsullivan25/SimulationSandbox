@@ -1303,8 +1303,17 @@ namespace Simulations
                 // it would mean they passed a type not consistent with input parameter type
                 // and also not a special type that can be parsed
 
-                //return Repeat(parameter, numberOfSimulations);
-                throw new Exception($"Parameter of type {parameter.GetType()} is not consistent with the type of input expected by the function and is not a special type that can be parsed.");
+                try
+                {
+                    // try making a minor type adjustment for different number formats
+                    return Repeat(parameter is T ? parameter : Convert.ChangeType(parameter, typeof(T)),
+                                  numberOfSimulations);
+                }
+                catch
+                {
+                    // if the above doesn't work, there's not much else we can do
+                    throw new Exception($"Parameter of type {parameter.GetType()} is not consistent with the type of input expected by the function and is not a special type that can be parsed.");
+                }
             }
         }
 
