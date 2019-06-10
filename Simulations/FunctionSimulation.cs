@@ -41,7 +41,6 @@ namespace Simulations
         /// Iterates over the function n number of times.
         /// </summary>
         /// <param name="numberOfSimulations">Number of times to invoke function.</param>
-        /// <param name="passthroughIParams">This has no affect for this version of the simulation, but is necessary to comply with the interface.</param>
         /// <returns>An array of objects with the same type as the output value of the function.</returns>
         public T[] Simulate(int numberOfSimulations)
         {
@@ -63,30 +62,29 @@ namespace Simulations
     public class FunctionSimulation<T1, T> : IFunctionSimulation<T>
     {
         public Func<T1, T> Function { get; set; }
-        public object[] Parameters { get; private set; }
+        public object Param1 { get; private set; }
 
         /// <summary>
         /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
         /// </summary>
         /// <param name="function">Function over which to iterate.</param>
-        /// <param name="parameters">Parameters in the order they appear in the function. Any type of object is acceptable so long as it corresponds with the type of the parameter accepted by the function. IParameters, FunctionSimulations, and ListOfInputs have special functionality.</param>
-        public FunctionSimulation(Func<T1, T> function, params object[] parameters)
+        /// <param name="param1">The first parameter in the function.</param>
+        public FunctionSimulation(Func<T1, T> function, object param1)
         {
             Function = function;
-            Parameters = parameters;
+            Param1 = param1;
         }
 
         /// <summary>
         /// Iterates over the function n number of times using the provided parameters as input.
         /// </summary>
         /// <param name="numberOfSimulations">Number of times to invoke function.</param>
-        /// <param name="passthroughIParams">FALSE if IParameters should be evaluated and converted to object arrays. TRUE if IParameters should be passed through as objects to the underlying function.</param>
         /// <returns>An array of objects with the same type as the output value of the function.</returns>
         /// <remarks>IParameters generally produce an output type of double or int. The simulation will attempt to convert the output values into the type of the function input parameter, but there is no guarantee the conversion will be successful in every situation.</remarks>
         public T[] Simulate(int numberOfSimulations)
         {
             // generate input parameters
-            object[] p1 = ParameterParsing.GetParameterValues<T1>(Parameters[0], numberOfSimulations);
+            object[] p1 = ParameterParsing.GetParameterValues<T1>(Param1, numberOfSimulations);
 
             // run function specified number of times
             T[] results = new T[numberOfSimulations];
@@ -107,31 +105,33 @@ namespace Simulations
     public class FunctionSimulation<T1, T2, T> : IFunctionSimulation<T>
     {
         public Func<T1, T2, T> Function { get; set; }
-        public object[] Parameters { get; private set; }
+        public object Param1 { get; private set; }
+        public object Param2 { get; private set; }
 
         /// <summary>
         /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
         /// </summary>
         /// <param name="function">Function over which to iterate.</param>
-        /// <param name="parameters">Parameters in the order they appear in the function. Any type of object is acceptable so long as it corresponds with the type of the parameter accepted by the function. IParameters, FunctionSimulations, and ListOfInputs have special functionality.</param>
-        public FunctionSimulation(Func<T1, T2, T> function, params object[] parameters)
+        /// <param name="param1">The first parameter in the function.</param>
+        /// <param name="param2">The second parameter in the function.</param>
+        public FunctionSimulation(Func<T1, T2, T> function, object param1, object param2)
         {
             Function = function;
-            Parameters = parameters;
+            Param1 = param1;
+            Param2 = param2;
         }
 
         /// <summary>
         /// Iterates over the function n number of times using the provided parameters as input.
         /// </summary>
         /// <param name="numberOfSimulations">Number of times to invoke function.</param>
-        /// <param name="passthroughIParams">FALSE if IParameters should be evaluated and converted to object arrays. TRUE if IParameters should be passed through as objects to the underlying function.</param>
         /// <returns>An array of objects with the same type as the output value of the function.</returns>
         /// <remarks>IParameters generally produce an output type of double or int. The simulation will attempt to convert the output values into the type of the function input parameter, but there is no guarantee the conversion will be successful in every situation.</remarks>
         public T[] Simulate(int numberOfSimulations)
         {
             // generate input parameters
-            object[] p1 = ParameterParsing.GetParameterValues<T1>(Parameters[0], numberOfSimulations);
-            object[] p2 = ParameterParsing.GetParameterValues<T2>(Parameters[1], numberOfSimulations);          
+            object[] p1 = ParameterParsing.GetParameterValues<T1>(Param1, numberOfSimulations);
+            object[] p2 = ParameterParsing.GetParameterValues<T2>(Param2, numberOfSimulations);          
 
             // run function specified number of times
             T[] results = new T[numberOfSimulations];
@@ -153,32 +153,37 @@ namespace Simulations
     public class FunctionSimulation<T1, T2, T3, T> : IFunctionSimulation<T>
     {
         public Func<T1, T2, T3, T> Function { get; set; }
-        public object[] Parameters { get; private set; }
+        public object Param1 { get; private set; }
+        public object Param2 { get; private set; }
+        public object Param3 { get; private set; }
 
         /// <summary>
         /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
         /// </summary>
         /// <param name="function">Function over which to iterate.</param>
-        /// <param name="parameters">Parameters in the order they appear in the function. Any type of object is acceptable so long as it corresponds with the type of the parameter accepted by the function. IParameters, FunctionSimulations, and ListOfInputs have special functionality.</param>
-        public FunctionSimulation(Func<T1, T2, T3, T> function, params object[] parameters)
+        /// <param name="param1">The first parameter in the function.</param>
+        /// <param name="param2">The second parameter in the function.</param>
+        /// <param name="param3">The third parameter in the function.</param>
+        public FunctionSimulation(Func<T1, T2, T3, T> function, object param1, object param2, object param3)
         {
             Function = function;
-            Parameters = parameters;
+            Param1 = param1;
+            Param2 = param2;
+            Param3 = param3;
         }
 
         /// <summary>
         /// Iterates over the function n number of times using the provided parameters as input.
         /// </summary>
         /// <param name="numberOfSimulations">Number of times to invoke function.</param>
-        /// <param name="passthroughIParams">FALSE if IParameters should be evaluated and converted to object arrays. TRUE if IParameters should be passed through as objects to the underlying function.</param>
         /// <returns>An array of objects with the same type as the output value of the function.</returns>
         /// <remarks>IParameters generally produce an output type of double or int. The simulation will attempt to convert the output values into the type of the function input parameter, but there is no guarantee the conversion will be successful in every situation.</remarks>
         public T[] Simulate(int numberOfSimulations)
         {
             // generate input parameters
-            object[] p1 = ParameterParsing.GetParameterValues<T1>(Parameters[0], numberOfSimulations);
-            object[] p2 = ParameterParsing.GetParameterValues<T2>(Parameters[1], numberOfSimulations);
-            object[] p3 = ParameterParsing.GetParameterValues<T3>(Parameters[2], numberOfSimulations);
+            object[] p1 = ParameterParsing.GetParameterValues<T1>(Param1, numberOfSimulations);
+            object[] p2 = ParameterParsing.GetParameterValues<T2>(Param2, numberOfSimulations);
+            object[] p3 = ParameterParsing.GetParameterValues<T3>(Param3, numberOfSimulations);
 
             // run function specified number of times
             T[] results = new T[numberOfSimulations];
@@ -201,33 +206,41 @@ namespace Simulations
     public class FunctionSimulation<T1, T2, T3, T4, T> : IFunctionSimulation<T>
     {
         public Func<T1, T2, T3, T4, T> Function { get; set; }
-        public object[] Parameters { get; private set; }
+        public object Param1 { get; private set; }
+        public object Param2 { get; private set; }
+        public object Param3 { get; private set; }
+        public object Param4 { get; private set; }
 
         /// <summary>
         /// A simulation that iterates through function calls while changing the input parameters in order to generate a set of possible outcomes.
         /// </summary>
         /// <param name="function">Function over which to iterate.</param>
-        /// <param name="parameters">Parameters in the order they appear in the function. Any type of object is acceptable so long as it corresponds with the type of the parameter accepted by the function. IParameters, FunctionSimulations, and ListOfInputs have special functionality.</param>
-        public FunctionSimulation(Func<T1, T2, T3, T4, T> function, params object[] parameters)
+        /// <param name="param1">The first parameter in the function.</param>
+        /// <param name="param2">The second parameter in the function.</param>
+        /// <param name="param3">The third parameter in the function.</param>
+        /// <param name="param4">The fourth parameter in the function.</param>
+        public FunctionSimulation(Func<T1, T2, T3, T4, T> function, object param1, object param2, object param3, object param4)
         {
             Function = function;
-            Parameters = parameters;
+            Param1 = param1;
+            Param2 = param2;
+            Param3 = param3;
+            Param4 = param4;
         }
 
         /// <summary>
         /// Iterates over the function n number of times using the provided parameters as input.
         /// </summary>
         /// <param name="numberOfSimulations">Number of times to invoke function.</param>
-        /// <param name="passthroughIParams">FALSE if IParameters should be evaluated and converted to object arrays. TRUE if IParameters should be passed through as objects to the underlying function.</param>
         /// <returns>An array of objects with the same type as the output value of the function.</returns>
         /// <remarks>IParameters generally produce an output type of double or int. The simulation will attempt to convert the output values into the type of the function input parameter, but there is no guarantee the conversion will be successful in every situation.</remarks>
         public T[] Simulate(int numberOfSimulations)
         {
             // generate input parameters
-            object[] p1 = ParameterParsing.GetParameterValues<T1>(Parameters[0], numberOfSimulations);
-            object[] p2 = ParameterParsing.GetParameterValues<T2>(Parameters[1], numberOfSimulations);
-            object[] p3 = ParameterParsing.GetParameterValues<T3>(Parameters[2], numberOfSimulations);
-            object[] p4 = ParameterParsing.GetParameterValues<T4>(Parameters[3], numberOfSimulations);
+            object[] p1 = ParameterParsing.GetParameterValues<T1>(Param1, numberOfSimulations);
+            object[] p2 = ParameterParsing.GetParameterValues<T2>(Param2, numberOfSimulations);
+            object[] p3 = ParameterParsing.GetParameterValues<T3>(Param3, numberOfSimulations);
+            object[] p4 = ParameterParsing.GetParameterValues<T4>(Param4, numberOfSimulations);
 
             // run function specified number of times
             T[] results = new T[numberOfSimulations];
