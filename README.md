@@ -1,6 +1,6 @@
 # SimulationSandbox
 
-A flexible Monte Carlo simulator that uses algebraic expressions to define and connect simulations.
+A flexible Monte Carlo simulator that uses algebraic expressions to define and connect simulations. A recent update has added the ability to use any function as the basis of a Monte Carlo simulation. All of the previous parameter types are supported by the new simulation class. Additional documentation will be added soon once this new feature is more fleshed out.
 
 ## Overview
 
