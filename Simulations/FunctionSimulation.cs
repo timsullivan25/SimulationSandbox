@@ -690,17 +690,16 @@ namespace Simulations
     }
 
     /// <summary>
-    /// Main and helpers methods for handling different types of simulation inputs.
+    /// Main and helper methods for handling different types of simulation inputs.
     /// </summary>
     public static class ParameterParsing
     {
         /// <summary>
-        /// Converts any parameter in an array of objects. IParameters will be parsed the same way they are in the StandardSimulation. FunctionSimulations will be simulated the necessary number of times and can be passed without pre-simulating the results. Collections will be passed through as objects unless they are wrapped in a ListOfInputs object, which will instead use each value as an individual input for one simulation.
+        /// Converts any parameter in an array of objects. IParameters will be parsed the same way they are in the StandardSimulation. FunctionSimulations will be simulated the necessary number of times and can be passed without pre-simulating the results. Collections will be passed through as objects or individual inputs based on the parameter type.
         /// </summary>
         /// <typeparam name="T">The desired type of the individual parameters. The type of value the function being simulated will accept as input.</typeparam>
         /// <param name="parameter">The parameter from which to generate an array of values.</param>
         /// <param name="numberOfSimulations">The number of values to generate.</param>
-        /// <param name="passthroughIParams">Indicates whether IParameters should be converted into arrays of values or passed through as objects to the function.</param>
         /// <returns></returns>
         public static object[] GetParameterValues<T>(object parameter, int numberOfSimulations)
         {
