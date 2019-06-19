@@ -1797,5 +1797,167 @@ namespace Simulations
 
             return values;
         }
-    }  
+    }
+
+    /// <summary>
+    /// A wrapper for parsing simulation outcomes when you know the outcomes are of a type that can be converted to double.
+    /// </summary>
+    /// <typeparam name="T">Type of object contained in results array.</typeparam>
+    public class NumericSimulationResults<T>
+    {
+        public T[] Results { get; private set; }
+        private double[] _results { get; set; }
+
+        // public summary statistics
+        public int NumberOfSimulations
+        {
+            get
+            {
+                return Results.Length;
+            }
+        }
+        public T First
+        {
+            get
+            {
+                return Results.First();
+            }
+        }
+        public T Last
+        {
+            get
+            {
+                return Results.Last();
+            }
+        }
+        public double Minimum
+        {
+            get
+            {
+                return MathNet.Numerics.Statistics.ArrayStatistics.Minimum(_results);
+            }
+        }
+        public double LowerQuartile
+        {
+            get
+            {
+                return MathNet.Numerics.Statistics.ArrayStatistics.LowerQuartileInplace(_results);
+            }
+        }
+        public double Mean
+        {
+            get
+            {
+                return MathNet.Numerics.Statistics.ArrayStatistics.Mean(_results);
+            }
+        }
+        public double Median
+        {
+            get
+            {
+                return MathNet.Numerics.Statistics.ArrayStatistics.MedianInplace(_results);
+            }
+        }
+        public double UpperQuartile
+        {
+            get
+            {
+                return MathNet.Numerics.Statistics.ArrayStatistics.UpperQuartileInplace(_results);
+            }
+        }
+        public double Maximum
+        {
+            get
+            {
+                return MathNet.Numerics.Statistics.ArrayStatistics.Maximum(_results);
+            }
+        }
+        public double Variance
+        {
+            get
+            {
+                return MathNet.Numerics.Statistics.ArrayStatistics.Variance(_results);
+            }
+        }
+        public double StandardDeviation
+        {
+            get
+            {
+                return MathNet.Numerics.Statistics.ArrayStatistics.StandardDeviation(_results);
+            }
+        }
+        public double Kurtosis
+        {
+            get
+            {
+                return MathNet.Numerics.Statistics.Statistics.Kurtosis(_results);
+            }
+        }
+        public double Skewness
+        {
+            get
+            {
+                return MathNet.Numerics.Statistics.Statistics.Skewness(_results);
+            }
+        }
+
+        // summary methods
+        /// <summary>
+        /// Returns the confidence interval of the results assuming that they are normally distributed.
+        /// </summary>
+        /// <param name="confidenceLevel">Confidence level to use when generating the confidence interval.</param>
+        /// <returns></returns>
+        public ConfidenceInterval ConfidenceInterval(ConfidenceLevel confidenceLevel)
+        {
+            double z = confidenceLevel.ZScore();
+            double sqrtOfNumberOfSimulations = Math.Sqrt(NumberOfSimulations);
+            double standardDeviation = StandardDeviation;
+            double upperBound = Mean + z * (standardDeviation / sqrtOfNumberOfSimulations);
+            double lowerBound = Mean - z * (standardDeviation / sqrtOfNumberOfSimulations);
+            return new ConfidenceInterval(confidenceLevel, lowerBound, upperBound);
+        }
+        /// <summary>
+        /// Returns the summary statistic associated with the passed enum. Can only return summary statistics that are of type double.
+        /// </summary>
+        /// <param name="summaryStatistic">Enum corresponding to the desired summary statistic.</param>
+        /// <returns></returns>
+        public double GetSummaryStatistic(SimulationParameterReturnType summaryStatistic)
+        {
+            switch (summaryStatistic)
+            {
+                case SimulationParameterReturnType.Minimum:
+                    return Minimum;
+                case SimulationParameterReturnType.LowerQuartile:
+                    return LowerQuartile;
+                case SimulationParameterReturnType.Mean:
+                    return Mean;
+                case SimulationParameterReturnType.Median:
+                    return Median;
+                case SimulationParameterReturnType.UpperQuartile:
+                    return UpperQuartile;
+                case SimulationParameterReturnType.Maximum:
+                    return Maximum;
+                case SimulationParameterReturnType.Variance:
+                    return Variance;
+                case SimulationParameterReturnType.StandardDeviation:
+                    return StandardDeviation;
+                case SimulationParameterReturnType.Kurtosis:
+                    return Kurtosis;
+                case SimulationParameterReturnType.Skewness:
+                    return Skewness;
+                default:
+                    throw new InvalidSummaryStatisticException($"Cannot return {summaryStatistic}. Only statistics that return a single number can be accessed using this function.");
+            }
+        }
+        
+        /// <summary>
+        /// Creates a results object with pre-computed summary statistics. Can easily be used in conjunction with a function simulation to generate a results object in one line of code and speed up the time it takes to analyze the outcomes.
+        /// </summary>
+        /// <param name="rawData">A collection of numeric outcomes, presumably from a function simulation.</param>
+        public NumericSimulationResults(ICollection<T> rawData)
+        {
+            Results = rawData.ToArray();
+            _results = rawData.Select(r => Convert.ToDouble(r)).ToArray();
+        }
+    }
 }

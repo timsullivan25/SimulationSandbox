@@ -247,5 +247,22 @@ namespace SimulationTests
         }
 
         #endregion
+
+        #region NumericSimulationResults
+
+        [TestMethod]
+        public void NumericSimulationResults()
+        {
+            var simulation = new FunctionSimulation<int>(Five);
+            var results = new NumericSimulationResults<int>(simulation.Simulate(100));
+
+            Assert.AreEqual(100, results.NumberOfSimulations);
+            Assert.AreEqual(5, results.Mean, 0.01);
+            Assert.AreEqual(5, results.Median, 0.01);
+            Assert.AreEqual(5, results.Maximum, 0.01);
+            Assert.AreEqual(5, results.Minimum, 0.01);
+        }
+
+        #endregion
     }
 }
