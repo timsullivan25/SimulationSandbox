@@ -66,6 +66,11 @@
         Never
     }
 
+    public enum RangeInterpolation
+    {
+        Linear
+    }
+
     public enum SimulationParameterReturnType
     {
         Results,

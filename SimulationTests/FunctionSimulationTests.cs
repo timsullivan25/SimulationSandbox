@@ -264,5 +264,21 @@ namespace SimulationTests
         }
 
         #endregion
+
+        #region Range_Linear
+
+        [TestMethod]
+        public void Range_Linear()
+        {
+            var range = new Range(1, 10, RangeInterpolation.Linear);
+            var values = range.GetValues(10);
+
+            for (int i = 1; i <= 10; i++)
+            {
+                Assert.AreEqual(i, values[i - 1], 0.01);
+            }
+        }
+
+        #endregion
     }
 }

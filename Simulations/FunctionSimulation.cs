@@ -1960,4 +1960,83 @@ namespace Simulations
             _results = rawData.Select(r => Convert.ToDouble(r)).ToArray();
         }
     }
+
+    /// <summary>
+    /// A class used to generate a series of values between a start and an end value using an interpolation rule.
+    /// </summary>
+    public class Range
+    {
+        public double Start { get; set; }
+        public double End { get; set; }
+        public RangeInterpolation Interpolation { get; set; }
+
+        /// <summary>
+        /// Creates a generator that will use the interpolation rule to generate any number of values between the start and end value.
+        /// </summary>
+        /// <param name="start">First value in the range.</param>
+        /// <param name="end">Last value in the range.</param>
+        /// <param name="interpolation">Rule for determining how to generate values between the start and end values.</param>
+        public Range(double start, double end, RangeInterpolation interpolation = RangeInterpolation.Linear)
+        {
+            Start = start;
+            End = end;
+            Interpolation = interpolation;
+        }
+
+        /// <summary>
+        /// Uses the interpolation rule to generate the specified number of values between the start and end values.
+        /// </summary>
+        /// <param name="numberOfValues">Number of values range should contain, including start and end values.</param>
+        /// <returns></returns>
+        public double[] GetValues(int numberOfValues)
+        {
+            double[] values = new double[numberOfValues];
+
+            if (Interpolation == RangeInterpolation.Linear)
+            {
+                // should probably throw error unless start and end are the same if they only request 1 value (or negative number)
+                double step = numberOfValues == 1 ? 0 : (End - Start) / (numberOfValues - 1);
+                values[0] = Start;
+                values[numberOfValues - 1] = End;
+
+                for (int i = 1; i < numberOfValues - 1; i++)
+                {
+                    values[i] = values[i - 1] + step;
+                }
+            }
+            else
+            {
+                throw new Exception("RangeInterpolation rule not yet implemented.");
+            }
+
+            return values;
+        }
+    }
+
+    /// <summary>
+    /// A collection of numbers. Primarily used for sensitivity analysis.
+    /// </summary>
+    public class Set
+    {
+        public double[] Members { get; set; }
+
+        /// <summary>
+        /// Generate a set containing the specified numbers.
+        /// </summary>
+        /// <param name="members">A collection of numbers to include in the set.</param>
+        public Set(ICollection<double> members)
+        {
+            Members = members.ToArray();
+        }
+
+        /// <summary>
+        /// Generate a set using a range object.
+        /// </summary>
+        /// <param name="range">The range object containing a start and end value and an interpolation rule.</param>
+        /// <param name="numberOfValues">The number of values to include in the set (and therefore interpolate).</param>
+        public Set(Range range, int numberOfValues)
+        {
+            Members = range.GetValues(numberOfValues);
+        }
+    }
 }
