@@ -44,8 +44,8 @@
     <Reference Include="MathNet.Numerics, Version=4.9.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\excel-addin\Addin_2.0\packages\MathNet.Numerics.4.9.0\lib\net40\MathNet.Numerics.dll</HintPath>
     </Reference>
-    <Reference Include="MathNet.Numerics.FSharp, Version=4.7.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\excel-addin\Addin_2.0\packages\MathNet.Numerics.FSharp.4.7.0\lib\net45\MathNet.Numerics.FSharp.dll</HintPath>
+    <Reference Include="MathNet.Numerics.FSharp, Version=4.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\excel-addin\Addin_2.0\packages\MathNet.Numerics.FSharp.4.9.0\lib\net45\MathNet.Numerics.FSharp.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Symbolics, Version=0.20.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\excel-addin\Addin_2.0\packages\MathNet.Symbolics.0.20.0\lib\net45\MathNet.Symbolics.dll</HintPath>
