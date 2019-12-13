@@ -94,14 +94,14 @@ namespace Simulations
                             switch (conditionalOutcomes[c].ComparisonOperator)
                             {
                                 case ComparisonOperator.Equal:
-                                    if (innerResults[s] == conditionalOutcomes[c].ConditionalValue)
+                                    if ((innerResults[s] >= conditionalOutcomes[c].ConditionalValue - conditionalOutcomes[c].Tolerance) && (innerResults[s] <= conditionalOutcomes[c].ConditionalValue + conditionalOutcomes[c].Tolerance))
                                     {
                                         conditionalResults[s] = conditionalOutcomes[c].ReturnValue;
                                         valueAssigned = true;
                                     }
                                     break;
                                 case ComparisonOperator.NotEqual:
-                                    if (innerResults[s] != conditionalOutcomes[c].ConditionalValue)
+                                    if ((innerResults[s] <= conditionalOutcomes[c].ConditionalValue - conditionalOutcomes[c].Tolerance) && (innerResults[s] >= conditionalOutcomes[c].ConditionalValue + conditionalOutcomes[c].Tolerance))
                                     {
                                         conditionalResults[s] = conditionalOutcomes[c].ReturnValue;
                                         valueAssigned = true;

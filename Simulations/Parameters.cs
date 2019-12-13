@@ -27,6 +27,7 @@ namespace Simulations
         public ComparisonOperator ComparisonOperator { get; set; }
         public double ConditionalValue { get; set; }
         public double ReturnValue { get; set; }
+        public double Tolerance { get; set; }
 
         /// <summary>
         /// One of the possible conditions that may be met in a ConditionalParameter. The ConditionalValue will be used as the right value in the comparison operation and the ConditionalParameter's ReferenceValue will be used on the left side.
@@ -34,11 +35,13 @@ namespace Simulations
         /// <param name="comparisonOperator">Operator to use when comparing the ConditionalValue to the ReferenceValue.</param>
         /// <param name="comparisonValue">Value that the ConditionalParameter's ReferenceValue will be compared against.</param>
         /// <param name="returnValue">Value that will be returned if the conditional operation evaluates to true.</param>
-        public ConditionalOutcome(ComparisonOperator comparisonOperator, double comparisonValue, double returnValue)
+        /// <param name="tolerance">Used when checking equal and not equal operators to overcome issues with floating point number comparisons.</param>
+        public ConditionalOutcome(ComparisonOperator comparisonOperator, double comparisonValue, double returnValue, double tolerance = 0.1d)
         {
             this.ComparisonOperator = comparisonOperator;
             this.ConditionalValue = comparisonValue;
             this.ReturnValue = returnValue;
+            this.Tolerance = tolerance;
         }
     }
 
