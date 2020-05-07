@@ -129,6 +129,49 @@ namespace SimulationTests
         }
 
         [TestMethod]
+        public void Simulation_IterationParameterValidationError()
+        {
+            IParameter[] parameters = new IParameter[]
+            {
+                new ConstantParameter("C", 10),
+                new IterationParameter("I", 10, 100, 10, InterpolationType.Log, false)
+            };
+
+            string expression = "C * I";
+            Simulation simulation = new Simulation(expression, parameters);
+
+            try
+            {
+                SimulationResults results = simulation.Simulate(100);
+                Assert.Fail("Exception was not thrown.");
+            }
+            catch (Simulations.Exceptions.IterationStepCountException)
+            {
+                // passed
+            }
+            catch
+            {
+                Assert.Fail("Unexpected exception thrown.");
+            }
+        }
+
+        [TestMethod]
+        public void Simulation_IterationParameter()
+        {
+            IParameter[] parameters = new IParameter[]
+            {
+                new ConstantParameter("C", 10),
+                new IterationParameter("I", 10, 110, 10, InterpolationType.Log, false)
+            };
+
+            string expression = "C * I";
+            Simulation simulation = new Simulation(expression, parameters);
+            SimulationResults results = simulation.Simulate(10);
+            Assert.AreEqual(10, results.NumberOfSimulations, "Incorrect number of similations run.");
+            Assert.AreEqual(883.1, results.Results[5], 1.0, "Incorrect value calculated.");
+        }
+
+        [TestMethod]
         public void Simulation_PrecomputedValidationError()
         {
             FloatingPoint[] precomputedValues = new FloatingPoint[] { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 };

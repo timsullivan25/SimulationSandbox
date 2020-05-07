@@ -44,6 +44,18 @@ namespace Simulations
         /// <returns>SimulationResults containing an array of doubles and summary statistics.</returns>
         public SimulationResults Simulate(int numberOfSimulations)
         {
+            #region IterativeParameter Count Validation
+
+            var iterationParameters = from param in this.Parameters
+                                      where param is IterationParameter
+                                      select param;
+
+            foreach (IterationParameter param in iterationParameters)
+                if (param.NumberOfSteps != numberOfSimulations)
+                    throw new IterationStepCountException($"{param.Name} has {param.NumberOfSteps} number of steps but the simulation being run expects {numberOfSimulations} values.");
+
+            #endregion
+
             #region PrecomputedParameter Count Validation
 
             var precomputedParameters = from param in this.Parameters
@@ -565,6 +577,15 @@ namespace Simulations
                     {
                         throw new DistributionFunctionFailureException($"Failed to compute {(Parameters[p] as DistributionFunctionParameter).ReturnType} function for {(Parameters[p] as DistributionFunctionParameter).Distribution.GetType()} distribution. This function may not be valid for this type of distribution. Check the MathNet.Numerics.Distributions documentation and the inner exception for more details.", innerException);
                     }
+                }
+
+                #endregion
+
+                #region Iteration Parameter
+
+                else if (Parameters[p] is IterationParameter)
+                {
+                    rawData[p] = (Parameters[p] as IterationParameter).GenerateValues();
                 }
 
                 #endregion

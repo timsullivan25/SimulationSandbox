@@ -184,6 +184,21 @@ namespace Simulations
             }
         }
 
+        public class IterationStepCountException : Exception
+        {
+            public IterationStepCountException() { }
+
+            public IterationStepCountException(string message)
+                : base(message)
+            {
+            }
+
+            public IterationStepCountException(string message, Exception inner)
+                : base(message, inner)
+            {
+            }
+        }
+
         public class MissingPrecomputedParameterException : Exception
         {
             public MissingPrecomputedParameterException() { }

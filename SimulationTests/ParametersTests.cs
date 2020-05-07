@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace SimulationTests
 {
     [TestClass]
-    public class ParmetersTests
+    public class ParameterTests
     {
         [TestMethod]
         public void Parameters_Iteration_Linear_Inclusive()
