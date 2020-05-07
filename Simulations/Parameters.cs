@@ -1,6 +1,7 @@
 ﻿using MathNet.Numerics.Distributions;
 using MathNet.Symbolics;
 using Simulations.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -271,6 +272,121 @@ namespace Simulations
         }
     }
 
+    public class IterationParameter : IParameter
+    {
+        public string Name { get; set; }
+        public double StartingValue { get; set; }
+        public double EndingValue { get; set; }
+        public int NumberOfSteps { get; set; }       
+        public InterpolationType InterpolationType { get; set; }
+        public bool IncludeEndPoints { get; set; }
+
+        /// <summary>
+        /// A parameter that generates a specified number of data points between two values.
+        /// </summary>
+        /// <param name="name">Name of the parameter to be used in the expression whe evaluating the results of the simulation.</param>
+        /// <param name="startingValue">The number from which to begin generating values.</param>
+        /// <param name="endingValue">The number at which to stop generating values.</param>
+        /// <param name="numberOfSteps">Total number of values that should be generated.</param>
+        /// <param name="interpolationType">Method for determining how the intermediate values are generated.</param>
+        /// <param name="includeEndpoints">If true, the starting and ending values will be returned and count against the number of steps. If false, the starting and ending values will not be returned and will not be counted against the number of steps.</param>
+        public IterationParameter(string name, double startingValue, double endingValue, int numberOfSteps, InterpolationType interpolationType = InterpolationType.Linear, bool includeEndpoints = true)
+        {
+            this.Name = name;
+            this.StartingValue = startingValue;
+            this.EndingValue = endingValue;
+            this.NumberOfSteps = numberOfSteps;
+            this.InterpolationType = interpolationType;
+            this.IncludeEndPoints = includeEndpoints;
+        }
+
+        /// <summary>
+        ///  A parameter that generates a specified number of data points by taking incremental linear steps from the starting value. For non-linear interpolation, use the other constructor.
+        /// </summary>
+        /// <param name="name">Name of the parameter to be used in the expression whe evaluating the results of the simulation.</param>
+        /// <param name="startingValue">The number from which to begin generating values.</param>
+        /// <param name="stepSize">The size of each linear step.</param>
+        /// <param name="numberOfSteps">The number of linear steps to take.</param>
+        public IterationParameter(string name, double startingValue, double stepSize, int numberOfSteps)
+        {
+            this.Name = name;
+            this.StartingValue = startingValue;
+            this.EndingValue = startingValue + (stepSize * numberOfSteps);
+            this.NumberOfSteps = numberOfSteps;
+            this.InterpolationType = InterpolationType.Linear;
+            this.IncludeEndPoints = true;
+        }
+
+        public double[] GenerateValues()
+        {
+            double[] values = new double[NumberOfSteps];
+            double a, b;
+
+            switch (InterpolationType)
+            {
+                case InterpolationType.Linear:
+                    double range = EndingValue - StartingValue;
+                    double stepSize = range / (IncludeEndPoints ? NumberOfSteps - 1 : NumberOfSteps + 1);
+                    if (IncludeEndPoints)
+                    {
+                        for (int i = 0; i < NumberOfSteps; i++)
+                            values[i] = StartingValue + (stepSize * i);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < NumberOfSteps; i++)
+                            values[i] = StartingValue + (stepSize * (i + 1));
+                    }
+                    break;
+
+                case InterpolationType.Exponential:
+                    a = StartingValue;
+                    b = Math.Pow((EndingValue / a), 1.0 / (IncludeEndPoints ? NumberOfSteps - 1 : NumberOfSteps + 1));
+                    if (IncludeEndPoints)
+                    {
+                        for (int i = 0; i < NumberOfSteps; i++)
+                            values[i] = a * Math.Pow(b, i);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < NumberOfSteps; i++)
+                            values[i] = a * Math.Pow(b, i + 1);
+                    }
+                    break;
+
+                case InterpolationType.Log:
+                    if (IncludeEndPoints)
+                    {
+                        a = (StartingValue - EndingValue) / Math.Log(1d / NumberOfSteps);
+                        b = Math.Exp((EndingValue * Math.Log(1) - StartingValue * Math.Log(NumberOfSteps)) / (StartingValue - EndingValue));
+                        for (int i = 0; i < NumberOfSteps; i++)
+                            values[i] = a * Math.Log(b * (i + 1));
+                    }
+                    else
+                    {
+                        a = (StartingValue - EndingValue) / Math.Log(1d / (NumberOfSteps + 2));
+                        b = Math.Exp((EndingValue * Math.Log(1) - StartingValue * Math.Log(NumberOfSteps + 2)) / (StartingValue - EndingValue));
+                        for (int i = 0; i < NumberOfSteps; i++)
+                            values[i] = a * Math.Log(b * (i + 2));
+                    }
+                    break;
+
+                case InterpolationType.Step:
+                    // this should be its own parameter or at least provide for extra logic
+                    // essentially, you need to define a number of steps, then determine the values of each step
+                    //     values can be determined using one of the above interpolation methods for the numbers of steps
+                    // then you check which % of x value out of max x value you are currently at
+                    //     lookup the corresponding step (based on percent range) and assign the value at that step
+                    // you could have room for variance both on width (% range) and height (value for range) of the steps
+
+                default:
+                    throw new InvalidInterpolationTypeException($"{InterpolationType} is not a valid interpolation type.");
+            }
+
+            return values;
+        }
+    }
+
     public class PrecomputedParameter : IParameter
     {
         public string Name { get; set; }
@@ -500,6 +616,29 @@ namespace Simulations
             this.ReturnType = returnType;
             this.SummaryRunCount = summaryRunCount;
             this.Constraint = constraint;
+        }
+    }
+
+    public class SensitivityParameter : IParameter
+    {
+        public string Name { get; set; }
+        public double DownsideCase { get; set; }
+        public double BaseCase { get; set; }
+        public double UpsideCase { get; set; }
+
+        /// <summary>
+        /// A parameter used for deterministic sensitivity analysis where all parameters base, downside, and upside values are known.
+        /// </summary>
+        /// <param name="name">Name of the parameter to be used in the expression whe evaluating the results of the simulation.</param>
+        /// <param name="downsideCase">Value of the parameter in the worst possible scenario.</param>
+        /// <param name="baseCase">Value of the parameter in the expected scenario.</param>
+        /// <param name="upsideCase">Value of the parameter in the best possible scenario.</param>
+        public SensitivityParameter(string name, double downsideCase, double baseCase, double upsideCase)
+        {
+            this.Name = name;
+            this.DownsideCase = downsideCase;
+            this.BaseCase = baseCase;
+            this.UpsideCase = upsideCase;           
         }
     }
 

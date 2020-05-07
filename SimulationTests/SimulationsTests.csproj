@@ -77,6 +77,7 @@
     <Compile Include="MathNetSymbolicsTests.cs" />
     <Compile Include="DependentSimulationTests.cs" />
     <Compile Include="BinomialTreeTests.cs" />
+    <Compile Include="ParametersTests.cs" />
     <Compile Include="TemplatesTest.cs" />
     <Compile Include="SensitivitySimulationTests.cs" />
     <Compile Include="SimulationTests.cs" />

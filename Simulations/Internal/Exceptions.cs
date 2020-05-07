@@ -64,6 +64,21 @@ namespace Simulations
             }
         }
 
+        public class InvalidInterpolationTypeException : Exception
+        {
+            public InvalidInterpolationTypeException() { }
+
+            public InvalidInterpolationTypeException(string message)
+                : base(message)
+            {
+            }
+
+            public InvalidInterpolationTypeException(string message, Exception inner)
+                : base(message, inner)
+            {
+            }
+        }
+
         public class InvalidMoveException : Exception
         {
             public InvalidMoveException() { }

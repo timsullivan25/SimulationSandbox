@@ -53,6 +53,9 @@
     <Reference Include="Nager.Date, Version=1.25.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\excel-addin\Addin_2.0\packages\Nager.Date.1.25.8\lib\net45\Nager.Date.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\excel-addin\Addin_2.0\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />

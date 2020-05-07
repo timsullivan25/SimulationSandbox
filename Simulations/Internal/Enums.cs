@@ -46,6 +46,14 @@
         ProbabilityLn
     }
 
+    public enum InterpolationType
+    { 
+        Linear,
+        Exponential,
+        Log,
+        Step
+    }
+
     public enum OptionExecutionRules
     {
         American,
