@@ -281,6 +281,8 @@ namespace Simulations
         public InterpolationType InterpolationType { get; set; }
         public bool IncludeEndPoints { get; set; }
 
+        public double LinearStepSize => (StartingValue - EndingValue) / (NumberOfSteps - (IncludeEndPoints ? 1 : -1));
+
         /// <summary>
         /// A parameter that generates a specified number of data points between two values.
         /// </summary>
