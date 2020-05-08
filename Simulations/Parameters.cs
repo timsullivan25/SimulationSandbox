@@ -1,5 +1,6 @@
 ﻿using MathNet.Numerics.Distributions;
 using MathNet.Symbolics;
+using Newtonsoft.Json;
 using Simulations.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -281,7 +282,7 @@ namespace Simulations
         public InterpolationType InterpolationType { get; set; }
         public bool IncludeEndPoints { get; set; }
 
-        public double LinearStepSize => (StartingValue - EndingValue) / (NumberOfSteps - (IncludeEndPoints ? 1 : -1));
+        public double LinearStepSize => (EndingValue - StartingValue) / (NumberOfSteps - (IncludeEndPoints ? 1 : -1));
 
         /// <summary>
         /// A parameter that generates a specified number of data points between two values.
@@ -292,6 +293,7 @@ namespace Simulations
         /// <param name="numberOfSteps">Total number of values that should be generated.</param>
         /// <param name="interpolationType">Method for determining how the intermediate values are generated.</param>
         /// <param name="includeEndpoints">If true, the starting and ending values will be returned and count against the number of steps. If false, the starting and ending values will not be returned and will not be counted against the number of steps.</param>
+        [JsonConstructor]
         public IterationParameter(string name, double startingValue, double endingValue, int numberOfSteps, InterpolationType interpolationType = InterpolationType.Linear, bool includeEndpoints = true)
         {
             this.Name = name;
@@ -308,13 +310,13 @@ namespace Simulations
         /// <param name="name">Name of the parameter to be used in the expression whe evaluating the results of the simulation.</param>
         /// <param name="startingValue">The number from which to begin generating values.</param>
         /// <param name="stepSize">The size of each linear step.</param>
-        /// <param name="numberOfSteps">The number of linear steps to take.</param>
+        /// <param name="numberOfSteps">The number of linear steps to take. Total steps will be this number plus one, to account for the starting value.</param>
         public IterationParameter(string name, double startingValue, double stepSize, int numberOfSteps)
         {
             this.Name = name;
             this.StartingValue = startingValue;
             this.EndingValue = startingValue + (stepSize * numberOfSteps);
-            this.NumberOfSteps = numberOfSteps;
+            this.NumberOfSteps = numberOfSteps + 1; // add one to include starting value
             this.InterpolationType = InterpolationType.Linear;
             this.IncludeEndPoints = true;
         }
